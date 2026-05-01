@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a6b3c">
+    <title>N-CURE Professional - نظام الإدارة</title>
+    <style>
+        /* التنسيقات الأساسية وتحسين الألوان */
+        :root {
+            --primary: #1a6b3c;
+            --primary-dark: #145033;
+            --primary-light: #e8f5ee;
+            --secondary: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-700: #374151;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--gray-100); color: #111; line-height: 1.6; }
+
+        .container { max-width: 600px; margin: 0 auto; background: white; min-height: 100vh; display: flex; flex-direction: column; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+
+        /* الهيدر */
+        .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 20px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+        .logo-text h1 { font-size: 1.2rem; }
+        .logo-text p { font-size: 0.7rem; opacity: 0.8; }
+
+        /* التبويبات */
+        .nav-tabs { display: flex; border-bottom: 2px solid var(--gray-200); background: white; }
+        .nav-tab { flex: 1; padding: 15px; border: none; background: none; cursor: pointer; font-weight: bold; color: var(--gray-700); transition: 0.3s; font-size: 0.9rem; }
+        .nav-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: var(--primary-light); }
+
+        /* الشاشات */
+        .content { padding: 15px; flex: 1; }
+        .screen { display: none; animation: fadeIn 0.3s; }
+        .screen.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* الكروت والقوائم */
+        .card { background: white; border: 1px solid var(--gray-200); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 12px; color: var(--primary); border-right: 4px solid var(--primary); padding-right: 10px; }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.8rem; margin-bottom: 5px; font-weight: 600; }
+        input, select { width: 100%; padding: 10px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 0.9rem; }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(26,107,60,0.1); }
+
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; }
+        .btn-secondary { background: var(--gray-200); color: var(--gray-700); }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+
+        /* شبكة الأدوية */
+        .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .product-card { border: 1.5px solid var(--gray-200); border-radius: 10px; padding: 10px; text-align: center; cursor: pointer; }
+        .product-card.selected { border-color: var(--primary); background: var(--primary-light); }
+
+        /* الفاتورة والسجلات */
+        .invoice-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid var(--gray-100); font-size: 0.85rem; }
+        .record-card { border: 1px solid var(--gray-200); padding: 12px; border-radius: 10px; margin-bottom: 10px; cursor: pointer; position: relative; }
+        .status-badge { font-size: 0.7rem; padding: 3px 8px; border-radius: 5px; font-weight: bold; }
+        .status-unpaid { background: #fee2e2; color: var(--danger); }
+        .status-partial { background: #fef3c7; color: var(--warning); }
+        .status-paid { background: #d1fae5; color: var(--success); }
+
+        /* مودال (Modal) */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 10px; }
+        .modal { background: white; width: 100%; max-width: 500px; border-radius: 15px; max-height: 90vh; overflow-y: auto; padding: 20px; }
+
+        .result-box { background: #f8fafc; border-radius: 8px; padding: 10px; margin: 10px 0; border: 1px dashed var(--primary); }
+        .result-row { display: flex; justify-content: space-between; font-size: 0.85rem; padding: 3px 0; }
+        .total-price { font-size: 1.1rem; color: var(--primary); font-weight: bold; border-top: 1px solid #ddd; margin-top: 5px; padding-top: 5px; }
+
+        @media (max-width: 400px) { .product-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo-text">
+            <h1>N-CURE Professional</h1>
+            <p id="live-clock"></p>
+        </div>
+        <button class="btn btn-secondary" style="padding: 8px" onclick="openSettings()">⚙️</button>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab(0)">➕ فاتورة</button>
+        <button class="nav-tab" onclick="switchTab(1)">📦 السجلات</button>
+        <button class="nav-tab" onclick="switchTab(2)">🧮 حاسبة</button>
+    </div>
+
+    <div class="content">
+        <!-- شاشة الفاتورة -->
+        <div class="screen active" id="screen-0">
+            <div class="card">
+                <div class="card-title">👤 بيانات العميل</div>
+                <div class="form-group">
+                    <label>اسم الصيدلية</label>
+                    <input type="text" id="inv-pharmacy" value="صيدلية / ">
+                </div>
+                <div class="form-group">
+                    <label>اسم المستلم</label>
+                    <input type="text" id="inv-receiver">
+                </div>
+                <div class="form-group">
+                    <label>التاريخ</label>
+                    <input type="date" id="inv-date">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💊 إضافة أصناف</div>
+                <div class="form-group">
+                    <select id="inv-drug-select" onchange="updateInvPreview()">
+                        <option value="">-- اختر المنتج --</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label>الخصم (%)</label>
+                        <input type="number" id="inv-discount" value="25" oninput="updateInvPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>الكمية</label>
+                        <input type="number" id="inv-qty" value="1" oninput="updateInvPreview()">
+                    </div>
+                </div>
+                <div id="inv-preview-box" class="result-box" style="display:none">
+                    <div class="result-row"><span>السعر الصافي:</span><span id="p-net">0</span></div>
+                    <div class="result-row total-price"><span>الإجمالي:</span><span id="p-total">0</span></div>
+                </div>
+                <button class="btn btn-primary" onclick="addToCart()">➕ إضافة للفاتورة</button>
+            </div>
+
+            <div id="cart-section" class="card" style="display:none">
+                <div class="card-title">📝 الأصناف المضافة</div>
+                <div id="cart-list"></div>
+                <div class="total-price" style="margin: 15px 0; text-align: center;">
+                    إجمالي الفاتورة: <span id="cart-final-total">0</span> ج.م
+                </div>
+                <div class="form-group">
+                    <label>المبلغ المدفوع (تحصيل جزئي أو كلي)</label>
+                    <input type="number" id="inv-paid-amount" value="0">
+                </div>
+                <button class="btn btn-primary" style="background: var(--success)" onclick="finalizeInvoice()">💾 حفظ وإصدار الفاتورة</button>
+            </div>
+        </div>
+
+        <!-- شاشة السجلات -->
+        <div class="screen" id="screen-1">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <div class="card" style="margin:0; text-align:center">
+                    <label>إجمالي المديونية</label>
+                    <div id="total-debt" style="font-weight:bold; color:var(--danger); font-size:1.2rem">0</div>
+                </div>
+                <div class="card" style="margin:0; text-align:center">
+                    <label>عدد الفواتير</label>
+                    <div id="total-inv-count" style="font-weight:bold; color:var(--primary); font-size:1.2rem">0</div>
+                </div>
+            </div>
+            <div id="records-list"></div>
+        </div>
+
+        <!-- شاشة الحاسبة -->
+        <div class="screen" id="screen-2">
+            <div class="card">
+                <div class="card-title">🧮 حاسبة سريعة</div>
+                <div class="product-grid" id="calc-grid"></div>
+                <hr style="margin:15px 0; border:0; border-top:1px solid #eee">
+                <div class="form-group">
+                    <label>نسبة الخصم</label>
+                    <input type="number" id="calc-disc" value="25" oninput="runQuickCalc()">
+                </div>
+                <div class="form-group">
+                    <label>الكمية</label>
+                    <input type="number" id="calc-q" value="1" oninput="runQuickCalc()">
+                </div>
+                <div id="calc-result-box" class="result-box" style="display:none; background: var(--primary-light);">
+                    <div class="result-row"><span>السعر الأساسي:</span><span id="c-base">0</span></div>
+                    <div class="result-row"><span>بعد الخصم:</span><span id="c-after">0</span></div>
+                    <div class="result-row total-price"><span>الإجمالي:</span><span id="c-total">0</span></div>
+                    <div id="c-tafqeet" style="font-size:0.75rem; color:var(--primary-dark); margin-top:5px; text-align:center; font-weight:bold"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- مودال التفاصيل -->
+<div class="modal-overlay" id="details-modal">
+    <div class="modal">
+        <div id="modal-content"></div>
+        <button class="btn btn-secondary" style="width:100%; margin-top:15px" onclick="closeModal()">إغلاق</button>
+    </div>
+</div>
+
+<!-- مودال الإعدادات -->
+<div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+        <div class="card-title">⚙️ إدارة النظام</div>
+        <div class="card">
+            <label>إضافة صنف جديد</label>
+            <input type="text" id="new-drug-name" placeholder="اسم الدواء" style="margin-bottom:5px">
+            <input type="number" id="new-drug-price" placeholder="السعر" style="margin-bottom:10px">
+            <button class="btn btn-primary" onclick="addNewDrug()">إضافة</button>
+        </div>
+        <div class="card">
+            <label>البيانات</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+                <button class="btn btn-secondary" onclick="exportData()">📥 تصدير</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('import-input').click()">📤 استيراد</button>
+            </div>
+            <input type="file" id="import-input" hidden onchange="importData(event)">
+            <button class="btn btn-danger" style="width:100%; margin-top:10px" onclick="clearAllData()">🗑️ مسح كافة البيانات</button>
+        </div>
+        <button class="btn btn-secondary" style="width:100%" onclick="closeSettings()">إغلاق</button>
+    </div>
+</div>
+
+<script>
+    // --- البيانات الأساسية ---
+    let appData = {
+        drugs: [
+            { id: 1, name: 'Vitamin D-400', price: 50 },
+            { id: 2, name: 'Probiotic', price: 125 }
+        ],
+        invoices: [],
+        config: { nextInvId: 1001 }
+    };
+
+    let cart = [];
+    let selectedCalcDrug = null;
+
+    // --- الدوال التشغيلية ---
+    function init() {
+        const saved = localStorage.getItem('ncure_pro_data');
+        if (saved) appData = JSON.parse(saved);
+        
+        document.getElementById('inv-date').valueAsDate = new Date();
+        updateDrugLists();
+        renderRecords();
+        startTime();
+    }
+
+    function saveData() {
+        localStorage.setItem('ncure_pro_data', JSON.stringify(appData));
+    }
+
+    function switchTab(idx) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(`screen-${idx}`).classList.add('active');
+        document.querySelectorAll('.nav-tab')[idx].classList.add('active');
+        if(idx === 1) renderRecords();
+        if(idx === 2) renderCalcGrid();
+    }
+
+    // --- منطق الفاتورة ---
+    function updateDrugLists() {
+        const select = document.getElementById('inv-drug-select');
+        select.innerHTML = '<option value="">-- اختر المنتج --</option>' + 
+            appData.drugs.map(d => `<option value="${d.id}">${d.name} (${d.price}ج)</option>`).join('');
+    }
+
+    function updateInvPreview() {
+        const drugId = document.getElementById('inv-drug-select').value;
+        const box = document.getElementById('inv-preview-box');
+        if(!drugId) { box.style.display = 'none'; return; }
+
+        const drug = appData.drugs.find(d => d.id == drugId);
+        const disc = parseFloat(document.getElementById('inv-discount').value) || 0;
+        const qty = parseInt(document.getElementById('inv-qty').value) || 1;
+        
+        const net = drug.price * (1 - disc/100);
+        document.getElementById('p-net').innerText = net.toFixed(2) + ' ج';
+        document.getElementById('p-total').innerText = (net * qty).toFixed(2) + ' ج';
+        box.style.display = 'block';
+    }
+
+    function addToCart() {
+        const drugId = document.getElementById('inv-drug-select').value;
+        if(!drugId) return alert('اختر دواء أولاً');
+
+        const drug = appData.drugs.find(d => d.id == drugId);
+        const disc = parseFloat(document.getElementById('inv-discount').value) || 0;
+        const qty = parseInt(document.getElementById('inv-qty').value) || 1;
+        const net = drug.price * (1 - disc/100);
+
+        cart.push({
+            name: drug.name,
+            basePrice: drug.price,
+            discount: disc,
+            qty: qty,
+            total: net * qty
+        });
+
+        renderCart();
+    }
+
+    function renderCart() {
+        const section = document.getElementById('cart-section');
+        const list = document.getElementById('cart-list');
+        if(cart.length === 0) { section.style.display = 'none'; return; }
+
+        section.style.display = 'block';
+        list.innerHTML = cart.map((item, index) => `
+            <div class="invoice-item">
+                <div><b>${item.name}</b> <br> <small>${item.qty} × ${item.basePrice} (خصم ${item.discount}%)</small></div>
+                <div style="display:flex; align-items:center; gap:10px">
+                    <span>${item.total.toFixed(2)}</span>
+                    <button class="btn btn-danger" style="padding:2px 8px" onclick="removeFromCart(${index})">×</button>
+                </div>
+            </div>
+        `).join('');
+
+        const total = cart.reduce((sum, item) => sum + item.total, 0);
+        document.getElementById('cart-final-total').innerText = total.toFixed(2);
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        renderCart();
+    }
+
+    function finalizeInvoice() {
+        const pharmacy = document.getElementById('inv-pharmacy').value;
+        const paid = parseFloat(document.getElementById('inv-paid-amount').value) || 0;
+        const total = cart.reduce((sum, item) => sum + item.total, 0);
+
+        if(cart.length === 0) return alert('الفاتورة فارغة!');
+
+        const newInv = {
+            id: appData.config.nextInvId++,
+            pharmacy,
+            receiver: document.getElementById('inv-receiver').value,
+            date: document.getElementById('inv-date').value,
+            items: [...cart],
+            total: total,
+            paid: paid,
+            status: paid >= total ? 'paid' : (paid > 0 ? 'partial' : 'unpaid'),
+            history: [{ date: new Date().toLocaleString(), msg: `إنشاء فاتورة بمبلغ ${total} ج.م` }]
+        };
+
+        appData.invoices.unshift(newInv);
+        saveData();
+        
+        // Reset
+        cart = [];
+        document.getElementById('inv-pharmacy').value = 'صيدلية / ';
+        document.getElementById('inv-paid-amount').value = 0;
+        renderCart();
+        alert('تم حفظ الفاتورة رقم: ' + newInv.id);
+        switchTab(1);
+    }
+
+    // --- السجلات ---
+    function renderRecords() {
+        const list = document.getElementById('records-list');
+        let totalDebt = 0;
+
+        if(appData.invoices.length === 0) {
+            list.innerHTML = '<p style="text-align:center; padding:20px; color:#888">لا توجد سجلات حالياً</p>';
+            return;
+        }
+
+        list.innerHTML = appData.invoices.map(inv => {
+            const debt = inv.total - inv.paid;
+            totalDebt += debt;
+            const statusClass = `status-${inv.status}`;
+            const statusText = inv.status === 'paid' ? 'تم السداد' : (inv.status === 'partial' ? 'سداد جزئي' : 'لم تسدد');
+
+            return `
+                <div class="record-card" onclick="showInvDetails(${inv.id})">
+                    <div style="display:flex; justify-content:space-between">
+                        <span style="font-weight:bold">${inv.pharmacy}</span>
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                    </div>
+                    <div style="font-size:0.75rem; color:#666">${inv.date} | فاتورة #${inv.id}</div>
+                    <div style="margin-top:8px; display:flex; justify-content:space-between; font-size:0.9rem">
+                        <span>الإجمالي: ${inv.total.toFixed(2)}</span>
+                        <span style="color:var(--danger)">المتبقي: ${debt.toFixed(2)}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.getElementById('total-debt').innerText = totalDebt.toFixed(2) + ' ج';
+        document.getElementById('total-inv-count').innerText = appData.invoices.length;
+    }
+
+    function showInvDetails(id) {
+        const inv = appData.invoices.find(i => i.id == id);
+        const modal = document.getElementById('details-modal');
+        const content = document.getElementById('modal-content');
+
+        content.innerHTML = `
+            <h3 style="color:var(--primary)">تفاصيل فاتورة #${inv.id}</h3>
+            <p><b>الجهة:</b> ${inv.pharmacy}</p>
+            <p><b>المستلم:</b> ${inv.receiver || '---'}</p>
+            <p><b>التاريخ:</b> ${inv.date}</p>
+            <hr style="margin:10px 0">
+            ${inv.items.map(it => `<div style="font-size:0.8rem">${it.name} - ${it.qty} قطعة = ${it.total.toFixed(2)}ج</div>`).join('')}
+            <div class="result-box">
+                <div class="result-row"><span>الإجمالي:</span><span>${inv.total.toFixed(2)}</span></div>
+                <div class="result-row"><span>المدفوع:</span><span>${inv.paid.toFixed(2)}</span></div>
+                <div class="result-row total-price"><span>المتبقي:</span><span>${(inv.total - inv.paid).toFixed(2)}</span></div>
+            </div>
+            <div style="font-size:0.7rem; background:#f0f0f0; padding:10px; border-radius:8px">
+                <b>سجل العمليات:</b><br>
+                ${inv.history.map(h => `• ${h.date}: ${h.msg}`).join('<br>')}
+            </div>
+            <div style="display:flex; gap:10px; margin-top:15px">
+                <button class="btn btn-primary" style="flex:1" onclick="addPayment(${inv.id})">➕ إضافة دفعة</button>
+                <button class="btn btn-danger" style="flex:1" onclick="deleteInv(${inv.id})">🗑️ حذف</button>
+            </div>
+        `;
+        modal.style.display = 'flex';
+    }
+
+    function addPayment(id) {
+        const amount = parseFloat(prompt('أدخل المبلغ المراد تحصيله:'));
+        if(isNaN(amount) || amount <= 0) return;
+
+        const inv = appData.invoices.find(i => i.id == id);
+        inv.paid += amount;
+        inv.status = inv.paid >= inv.total ? 'paid' : 'partial';
+        inv.history.push({ date: new Date().toLocaleString(), msg: `تحصيل مبلغ ${amount} ج.م` });
+        
+        saveData();
+        renderRecords();
+        closeModal();
+    }
+
+    function deleteInv(id) {
+        if(!confirm('هل أنت متأكد من حذف هذه الفاتورة نهائياً؟')) return;
+        appData.invoices = appData.invoices.filter(i => i.id != id);
+        saveData();
+        renderRecords();
+        closeModal();
+    }
+
+    // --- الحاسبة السريعة ---
+    function renderCalcGrid() {
+        const grid = document.getElementById('calc-grid');
+        grid.innerHTML = appData.drugs.map(d => `
+            <div class="product-card ${selectedCalcDrug?.id === d.id ? 'selected' : ''}" onclick="selectCalcDrug(${d.id})">
+                <div style="font-weight:bold">${d.name}</div>
+                <div style="color:var(--primary)">${d.price} ج.م</div>
+            </div>
+        `).join('');
+    }
+
+    function selectCalcDrug(id) {
+        selectedCalcDrug = appData.drugs.find(d => d.id == id);
+        renderCalcGrid();
+        runQuickCalc();
+    }
+
+    function runQuickCalc() {
+        if(!selectedCalcDrug) return;
+        const disc = parseFloat(document.getElementById('calc-disc').value) || 0;
+        const qty = parseInt(document.getElementById('calc-q').value) || 1;
+        
+        const base = selectedCalcDrug.price * qty;
+        const netOne = selectedCalcDrug.price * (1 - disc/100);
+        const total = netOne * qty;
+
+        document.getElementById('c-base').innerText = base.toFixed(2);
+        document.getElementById('c-after').innerText = netOne.toFixed(2);
+        document.getElementById('c-total').innerText = total.toFixed(2);
+        document.getElementById('c-tafqeet').innerText = tafqeet(total);
+        document.getElementById('calc-result-box').style.display = 'block';
+    }
+
+    // --- دالة التفقيط العربي (المحسنة) ---
+    function tafqeet(n) {
+        const fraction = Math.round((n % 1) * 100);
+        const integer = Math.floor(n);
+        
+        const helper = (num) => {
+            const ones = ['', 'واحد', 'اثنان', 'ثلاثة', 'أربعة', 'خمسة', 'ستة', 'سبعة', 'ثمانية', 'تسعة'];
+            const tens = ['', 'عشرة', 'عشرون', 'ثلاثون', 'أربعون', 'خمسون', 'ستون', 'سبعون', 'ثمانون', 'تسعون'];
+            const hundreds = ['', 'مائة', 'مائتان', 'ثلاثمائة', 'أربعمائة', 'خمسمائة', 'ستمائة', 'سبعمائة', 'ثمانمائة', 'تسعمائة'];
+            
+            if (num === 0) return '';
+            if (num < 10) return ones[num];
+            if (num < 20) {
+                const spec = ['عشرة', 'أحد عشر', 'اثنا عشر', 'ثلاثة عشر', 'أربعة عشر', 'خمسة عشر', 'ستة عشر', 'سبعة عشر', 'ثمانية عشر', 'تسعة عشر'];
+                return spec[num - 10];
+            }
+            if (num < 100) return (num % 10 === 0) ? tens[Math.floor(num/10)] : ones[num % 10] + ' و' + tens[Math.floor(num/10)];
+            if (num < 1000) return (num % 100 === 0) ? hundreds[Math.floor(num/100)] : hundreds[Math.floor(num/100)] + ' و' + helper(num % 100);
+            return num.toString();
+        };
+
+        let result = helper(integer) + ' جنيهاً';
+        if(fraction > 0) result += ' و' + helper(fraction) + ' قرشاً';
+        return result + ' فقط لا غير';
+    }
+
+    // --- الإعدادات والوقت ---
+    function openSettings() { document.getElementById('settings-modal').style.display = 'flex'; }
+    function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
+    function closeModal() { document.getElementById('details-modal').style.display = 'none'; }
+
+    function addNewDrug() {
+        const name = document.getElementById('new-drug-name').value;
+        const price = parseFloat(document.getElementById('new-drug-price').value);
+        if(!name || !price) return;
+
+        appData.drugs.push({ id: Date.now(), name, price });
+        saveData();
+        updateDrugLists();
+        renderCalcGrid();
+        alert('تمت إضافة الصنف');
+    }
+
+    function exportData() {
+        const blob = new Blob([JSON.stringify(appData)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ncure_backup_${new Date().toLocaleDateString()}.json`;
+        a.click();
+    }
+
+    function importData(e) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            appData = JSON.parse(event.target.result);
+            saveData();
+            location.reload();
+        };
+        reader.readAsText(e.target.files[0]);
+    }
+
+    function clearAllData() {
+        if(confirm('سيتم حذف كل الفواتير والأدوية، هل أنت متأكد؟')) {
+            localStorage.removeItem('ncure_pro_data');
+            location.reload();
+        }
+    }
+
+    function startTime() {
+        const today = new Date();
+        document.getElementById('live-clock').innerHTML = today.toLocaleDateString('ar-EG') + ' | ' + today.toLocaleTimeString('ar-EG');
+        setTimeout(startTime, 1000);
+    }
+
+    init();
+</script>
+</body>
+</html>
