@@ -15,11 +15,11 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: #333; overflow-x: hidden; padding-bottom: 20px; }
 
-        /* Ø´Ø§Ø´Ø© ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ */
+        /* شاشة تسجيل الدخول */
         #login-screen { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
         .login-card { background: white; width: 100%; max-width: 350px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
         
-        /* Ø§Ù„ÙˆØ§Ø¬Ù‡Ø© Ø§Ù„Ø£Ø³Ø§Ø³ÙŠØ© */
+        /* الواجهة الأساسية */
         #main-app { display: none; }
         .header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
         .logo-area { display: flex; align-items: center; gap: 10px; }
@@ -44,11 +44,11 @@
         .btn-save { background: var(--success); color: white; }
         .btn-close { background: #eee; color: #333; }
 
-        /* Ø§Ù„ØªÙ†Ø¨ÙŠÙ‡Ø§Øª Ø§Ù„Ø§Ø­ØªØ±Ø§ÙÙŠØ© */
+        /* التنبيهات الاحترافية */
         .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; }
         .custom-alert { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 12px; z-index: 1001; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
 
-        /* Ø§Ù„ÙÙˆØ§ØªÙŠØ± ÙˆØ§Ù„Ù…Ø®Ø²Ù† */
+        /* الفواتير والمخزن */
         .record-item { background: white; padding: 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; position: relative; }
         .user-badge { position: absolute; left: 10px; top: 10px; font-size: 0.65rem; background: #e8f5e9; color: var(--primary); padding: 2px 6px; border-radius: 4px; font-weight: bold; }
         
@@ -56,12 +56,12 @@
         .inv-table th, .inv-table td { border: 1px solid #eee; padding: 6px; text-align: center; }
         .inv-table th { background: #f8f8f8; color: var(--primary); }
 
-        /* ÙÙ„Ø§ØªØ± Ø§Ù„Ù…Ø§Ø³ØªØ± */
+        /* فلاتر الماستر */
         .filters { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding: 4px 0; }
         .filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 0.75rem; white-space: nowrap; cursor: pointer; font-weight: bold; }
         .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* ÙˆØ¶Ø¹ Ø§Ù„Ø·Ø¨Ø§Ø¹Ø© */
+        /* وضع الطباعة */
         @media print {
             body * { visibility: hidden; }
             #invoice-modal, #invoice-modal * { visibility: visible; }
@@ -75,10 +75,10 @@
 <div id="login-screen">
     <div class="login-card">
         <img src="logo.png" style="width: 70px; margin-bottom: 10px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
-        <h2 style="color:var(--primary); margin-bottom:20px;">Ø¯Ø®ÙˆÙ„ Ø§Ù„Ù†Ø¸Ø§Ù…</h2>
-        <input type="text" id="login-user" placeholder="Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…">
-        <input type="password" id="login-pass" placeholder="ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±">
-        <button class="btn btn-main" onclick="handleLogin()">Ø¯Ø®ÙˆÙ„ <i class="fas fa-sign-in-alt"></i></button>
+        <h2 style="color:var(--primary); margin-bottom:20px;">دخول النظام</h2>
+        <input type="text" id="login-user" placeholder="اسم المستخدم">
+        <input type="password" id="login-pass" placeholder="كلمة المرور">
+        <button class="btn btn-main" onclick="handleLogin()">دخول <i class="fas fa-sign-in-alt"></i></button>
         <p id="login-msg" style="color:red; font-size:0.7rem; margin-top:10px"></p>
     </div>
 </div>
@@ -92,57 +92,57 @@
                 <small id="clock" style="font-size: 0.6rem; opacity:0.8"></small>
             </div>
         </div>
-        <button class="btn" style="width:auto; padding:5px 10px; background:rgba(255,255,255,0.2); color:white; margin:0" onclick="location.reload()">Ø®Ø±ÙˆØ¬</button>
+        <button class="btn" style="width:auto; padding:5px 10px; background:rgba(255,255,255,0.2); color:white; margin:0" onclick="location.reload()">خروج</button>
     </div>
 
     <div class="tabs">
-        <button class="tab active" id="tab0" onclick="showScreen(0)"><i class="fas fa-file-invoice"></i> ÙØ§ØªÙˆØ±Ø©</button>
-        <button class="tab" id="tab1" onclick="showScreen(1)"><i class="fas fa-history"></i> Ø§Ù„Ø³Ø¬Ù„</button>
-        <button class="tab" id="tab2" onclick="showScreen(2)"><i class="fas fa-warehouse"></i> Ø§Ù„Ù…Ø®Ø²Ù†</button>
-        <button class="tab" id="tab3" onclick="showScreen(3)"><i class="fas fa-calculator"></i> Ø­Ø§Ø³Ø¨Ø©</button>
+        <button class="tab active" id="tab0" onclick="showScreen(0)"><i class="fas fa-file-invoice"></i> فاتورة</button>
+        <button class="tab" id="tab1" onclick="showScreen(1)"><i class="fas fa-history"></i> السجل</button>
+        <button class="tab" id="tab2" onclick="showScreen(2)"><i class="fas fa-warehouse"></i> المخزن</button>
+        <button class="tab" id="tab3" onclick="showScreen(3)"><i class="fas fa-calculator"></i> حاسبة</button>
     </div>
 
     <div class="content">
         <div class="screen active" id="s0">
             <div class="card">
-                <div class="card-title">Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ÙØ§ØªÙˆØ±Ø©</div>
-                <label>Ø§Ø³Ù… Ø§Ù„ØµÙŠØ¯Ù„ÙŠØ©</label>
-                <input type="text" id="p-pharm" list="pharm-list" placeholder="ØµÙŠØ¯Ù„ÙŠØ© / ">
+                <div class="card-title">بيانات الفاتورة</div>
+                <label>اسم الصيدلية</label>
+                <input type="text" id="p-pharm" list="pharm-list" placeholder="صيدلية / ">
                 <datalist id="pharm-list"></datalist>
-                <label>Ø§Ù„Ù…Ø³ØªÙ„Ù… (Ø¯ÙƒØªÙˆØ±)</label>
-                <input type="text" id="p-doc" placeholder="Ø¯ÙƒØªÙˆØ±/ ">
-                <label>Ø§Ù„ØªØ§Ø±ÙŠØ®</label>
+                <label>المستلم (دكتور)</label>
+                <input type="text" id="p-doc" placeholder="دكتور/ ">
+                <label>التاريخ</label>
                 <input type="date" id="p-date">
             </div>
             <div class="card">
-                <div class="card-title">Ø¥Ø¶Ø§ÙØ© ØµÙ†Ù</div>
+                <div class="card-title">إضافة صنف</div>
                 <select id="p-drug" onchange="updatePre()"></select>
                 <div style="display:flex; gap:8px">
-                    <div style="flex:1"><label>Ø®ØµÙ… %</label><input type="number" id="p-disc" value="25"></div>
-                    <div style="flex:1"><label>Ø§Ù„ÙƒÙ…ÙŠØ©</label><input type="number" id="p-qty" value="1"></div>
+                    <div style="flex:1"><label>خصم %</label><input type="number" id="p-disc" value="25"></div>
+                    <div style="flex:1"><label>الكمية</label><input type="number" id="p-qty" value="1"></div>
                 </div>
                 <div id="pre-box" style="display:none; text-align:center; font-size:0.8rem; color:var(--primary); margin-top:8px; font-weight:bold;"></div>
-                <button class="btn btn-main" onclick="addItem()">Ø¥Ø¶Ø§ÙØ© <i class="fas fa-plus"></i></button>
+                <button class="btn btn-main" onclick="addItem()">إضافة <i class="fas fa-plus"></i></button>
             </div>
             <div id="cart-card" class="card" style="display:none">
                 <table class="inv-table" id="cart-table">
                     <thead>
-                        <tr><th>Ø§Ù„ØµÙ†Ù</th><th>Ø§Ù„Ø³Ø¹Ø±</th><th>Ø§Ù„ØµØ§ÙÙŠ</th><th>ÙƒÙ…ÙŠØ©</th><th>Ø¥Ø¬Ù…Ø§Ù„ÙŠ</th><th></th></tr>
+                        <tr><th>الصنف</th><th>السعر</th><th>الصافي</th><th>كمية</th><th>إجمالي</th><th></th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
                 <div style="text-align:center; padding:15px; font-weight:bold; color:var(--primary); font-size:1.1rem;">
-                    Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ: <span id="cart-total">0.00</span> Ø¬
+                    الإجمالي: <span id="cart-total">0.00</span> ج
                 </div>
-                <button class="btn btn-save" onclick="saveInv()">Ø­ÙØ¸ Ø§Ù„ÙØ§ØªÙˆØ±Ø© <i class="fas fa-save"></i></button>
+                <button class="btn btn-save" onclick="saveInv()">حفظ الفاتورة <i class="fas fa-save"></i></button>
             </div>
         </div>
 
         <div class="screen" id="s1">
             <div id="master-filters" style="display:none">
-                <label style="margin-bottom:5px">Ø¹Ø±Ø¶ ÙÙˆØ§ØªÙŠØ±:</label>
+                <label style="margin-bottom:5px">عرض فواتير:</label>
                 <div class="filters" id="user-filter-list">
-                    <button class="filter-btn active" onclick="filterByUser(event, 'all')">Ø§Ù„ÙƒÙ„</button>
+                    <button class="filter-btn active" onclick="filterByUser('all')">الكل</button>
                 </div>
             </div>
             <div id="rec-list"></div>
@@ -150,27 +150,27 @@
 
         <div class="screen" id="s2">
             <div class="card">
-                <div class="card-title">Ø§Ù„Ø±ØµÙŠØ¯ Ø§Ù„Ø­Ø§Ù„ÙŠ</div>
+                <div class="card-title">الرصيد الحالي</div>
                 <div id="stock-list"></div>
             </div>
             <div class="card" id="admin-stock-add" style="display:none">
-                <div class="card-title">ØªÙˆØ±ÙŠØ¯ ÙƒÙ…ÙŠØ§Øª Ø¬Ø¯ÙŠØ¯Ø©</div>
+                <div class="card-title">توريد كميات جديدة</div>
                 <select id="st-drug"></select>
-                <label>Ø§Ù„ÙƒÙ…ÙŠØ© Ø§Ù„Ù…Ø³ØªÙ„Ù…Ø©</label>
+                <label>الكمية المستلمة</label>
                 <input type="number" id="st-qty" placeholder="0">
-                <button class="btn btn-main" onclick="addStock()">Ø¥Ø¶Ø§ÙØ© Ù„Ù„Ù…Ø®Ø²Ù† <i class="fas fa-download"></i></button>
+                <button class="btn btn-main" onclick="addStock()">إضافة للمخزن <i class="fas fa-download"></i></button>
             </div>
         </div>
 
         <div class="screen" id="s3">
             <div class="card">
-                <div class="card-title">Ø­Ø§Ø³Ø¨Ø© Ø³Ø±ÙŠØ¹Ø©</div>
+                <div class="card-title">حاسبة سريعة</div>
                 <select id="c-drug" onchange="doCalc()"></select>
-                <label>Ø§Ù„Ø®ØµÙ… %</label>
+                <label>الخصم %</label>
                 <input type="number" id="c-disc" value="25" oninput="doCalc()">
                 <div style="text-align:center; padding:20px;">
-                    <div style="font-size:0.8rem; color:#666">ØµØ§ÙÙŠ Ø§Ù„Ø¹Ù„Ø¨Ø© Ø§Ù„ÙˆØ§Ø­Ø¯:</div>
-                    <div id="c-unit" style="font-size:1.5rem; font-weight:bold; color:var(--primary)">0.00 Ø¬</div>
+                    <div style="font-size:0.8rem; color:#666">صافي العلبة الواحد:</div>
+                    <div id="c-unit" style="font-size:1.5rem; font-weight:bold; color:var(--primary)">0.00 ج</div>
                 </div>
             </div>
         </div>
@@ -182,7 +182,7 @@
 <div class="custom-alert" id="custom-alert">
     <div id="alert-icon" style="font-size: 40px; margin-bottom: 10px;"></div>
     <p id="alert-msg" style="font-weight: bold;"></p>
-    <button class="btn btn-main" onclick="closeAllModals()">Ù…ÙˆØ§ÙÙ‚</button>
+    <button class="btn btn-main" onclick="closeAllModals()">موافق</button>
 </div>
 
 <div class="custom-alert" id="invoice-modal" style="width:95%; max-width:500px; text-align:right;">
@@ -196,21 +196,21 @@
     <div style="font-size:0.8rem; line-height:1.6; margin-bottom:15px;" id="inv-view-details"></div>
     <table class="inv-table" id="inv-view-table">
         <thead>
-            <tr><th>Ø§Ù„ØµÙ†Ù</th><th>Ø§Ù„Ø³Ø¹Ø±</th><th>Ø§Ù„Ø®ØµÙ…</th><th>Ø§Ù„ØµØ§ÙÙŠ</th><th>Ø§Ù„ÙƒÙ…ÙŠØ©</th><th>Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ</th></tr>
+            <tr><th>الصنف</th><th>السعر</th><th>الخصم</th><th>الصافي</th><th>الكمية</th><th>الإجمالي</th></tr>
         </thead>
         <tbody></tbody>
     </table>
     <div style="text-align:left; font-weight:bold; font-size:1.1rem; margin-top:15px; padding-top:10px; border-top:1px solid #eee">
-        Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ Ø§Ù„Ù†Ù‡Ø§Ø¦ÙŠ: <span id="inv-view-total"></span> Ø¬
+        الإجمالي النهائي: <span id="inv-view-total"></span> ج
     </div>
     <div class="no-print" style="display:flex; gap:10px; margin-top:20px">
-        <button class="btn btn-main" onclick="window.print()"><i class="fas fa-print"></i> Ø·Ø¨Ø§Ø¹Ø© / PDF</button>
-        <button class="btn btn-close" onclick="closeAllModals()">Ø¥ØºÙ„Ø§Ù‚</button>
+        <button class="btn btn-main" onclick="window.print()"><i class="fas fa-print"></i> طباعة / PDF</button>
+        <button class="btn btn-close" onclick="closeAllModals()">إغلاق</button>
     </div>
 </div>
 
 <script>
-    // --- Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø£Ø³Ø§Ø³ÙŠØ© ---
+    // --- الإعدادات الأساسية ---
     const adminEmail = "N.cure.aaj@Gmail.com";
     
     let app = { 
@@ -219,20 +219,19 @@
             {id:2, name:'Probiotic', price:125}
         ], 
         logs: [], 
-        stock: {"Vitamin D-400": 50, "Probiotic": 50},
+        stock: {"Vitamin D-400": 0, "Probiotic": 0},
         next: 1001,
         loggedUser: null
     };
 
     const usersList = [
-        { u: "janwaheed", p: "2131992", name: "Dr.Jan Waheed", role: "master" },
-        { u: "aayad", p: "123456", name: "Dr.Ahmed Ayad", role: "user" },
-        { u: "aboshaqra", p: "123456", name: "Dr.Ahmed AboShaqra", role: "user" }
-];
+        { u: "jan", p: "123", name: "Jan Waheed", role: "master" },
+        { u: "ncure1", p: "456", name: "مندوب 1", role: "user" }
+    ];
 
     let tempCart = [];
 
-    // --- ÙˆØ¸Ø§Ø¦Ù ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ ---
+    // --- وظائف تسجيل الدخول ---
     function handleLogin() {
         const u = document.getElementById('login-user').value.toLowerCase();
         const p = document.getElementById('login-pass').value;
@@ -251,7 +250,7 @@
             }
             init();
         } else {
-            document.getElementById('login-msg').innerText = "Ø®Ø·Ø£ ÙÙŠ Ø§Ø³Ù… Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù… Ø£Ùˆ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±";
+            document.getElementById('login-msg').innerText = "خطأ في اسم المستخدم أو كلمة المرور";
         }
     }
 
@@ -274,9 +273,9 @@
         updatePharmDatalist();
     }
 
-    // --- ÙˆØ¸Ø§Ø¦Ù Ø§Ù„ÙØ§ØªÙˆØ±Ø© ---
+    // --- وظائف الفاتورة ---
     function loadSelects() {
-        const opt = '<option value="">-- Ø§Ø®ØªØ± Ø§Ù„ØµÙ†Ù --</option>' + app.drugs.map(x=>`<option value="${x.id}">${x.name} (${x.price}Ø¬)</option>`).join('');
+        const opt = '<option value="">-- اختر الصنف --</option>' + app.drugs.map(x=>`<option value="${x.id}">${x.name} (${x.price}ج)</option>`).join('');
         document.getElementById('p-drug').innerHTML = opt;
         document.getElementById('st-drug').innerHTML = opt;
         document.getElementById('c-drug').innerHTML = opt;
@@ -288,7 +287,7 @@
         const itm = app.drugs.find(x=>x.id==id);
         const disc = parseFloat(document.getElementById('p-disc').value) || 0;
         const net = itm.price * (1 - (disc/100));
-        document.getElementById('pre-box').innerHTML = `Ø³Ø¹Ø± Ø§Ù„ØµÙ†Ù ØµØ§ÙÙŠ: ${net.toFixed(2)} Ø¬`;
+        document.getElementById('pre-box').innerHTML = `سعر الصنف صافي: ${net.toFixed(2)} ج`;
         document.getElementById('pre-box').style.display = 'block';
     }
 
@@ -299,9 +298,9 @@
         const q = parseInt(document.getElementById('p-qty').value) || 1;
         const d = parseFloat(document.getElementById('p-disc').value) || 0;
         
-        // Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø§Ù„Ù…Ø®Ø²Ù†
+        // التحقق من المخزن
         if(app.stock[itm.name] < q) {
-            return showCustomAlert("Ø§Ù„Ù…Ø®Ø²Ù† Ù„Ø§ ÙŠÙƒÙÙŠ! Ø§Ù„Ø±ØµÙŠØ¯ Ø§Ù„Ù…ØªØ§Ø­: " + app.stock[itm.name], "warning");
+            return showCustomAlert("المخزن لا يكفي! الرصيد المتاح: " + app.stock[itm.name], "warning");
         }
 
         const net = itm.price * (1 - (d/100));
@@ -327,7 +326,7 @@
                 <td>${i.net.toFixed(2)}</td>
                 <td>${i.qty}</td>
                 <td>${i.sub.toFixed(2)}</td>
-                <td><i class="fas fa-trash" style="color:red; cursor:pointer" onclick="removeItem(${idx})"></i></td>
+                <td><i class="fas fa-trash" style="color:red" onclick="removeItem(${idx})"></i></td>
             </tr>
         `).join('');
         document.getElementById('cart-total').innerText = tempCart.reduce((a,b)=>a+b.sub, 0).toFixed(2);
@@ -341,7 +340,7 @@
     function saveInv() {
         const pharm = document.getElementById('p-pharm').value;
         const doc = document.getElementById('p-doc').value;
-        if(!pharm || tempCart.length === 0) return showCustomAlert("ÙŠØ±Ø¬Ù‰ Ø¥ÙƒÙ…Ø§Ù„ Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„ÙØ§ØªÙˆØ±Ø©", "warning");
+        if(!pharm || tempCart.length === 0) return showCustomAlert("يرجى إكمال بيانات الفاتورة", "warning");
 
         const newInv = {
             id: app.next++,
@@ -354,7 +353,7 @@
             u_id: app.loggedUser.u
         };
 
-        // Ø®ØµÙ… Ù…Ù† Ø§Ù„Ù…Ø®Ø²Ù†
+        // خصم من المخزن
         tempCart.forEach(item => {
             app.stock[item.name] -= item.qty;
         });
@@ -364,11 +363,11 @@
         tempCart = [];
         renderCart();
         renderStock();
-        showCustomAlert("ØªÙ… Ø­ÙØ¸ Ø§Ù„ÙØ§ØªÙˆØ±Ø© ÙˆØªØ­Ø¯ÙŠØ« Ø§Ù„Ù…Ø®Ø²Ù† Ø¨Ù†Ø¬Ø§Ø­ âœ…", "success");
-        setTimeout(() => showScreen(1), 1500);
+        showCustomAlert("تم حفظ الفاتورة وتحديث المخزن بنجاح ✅", "success");
+        showScreen(1);
     }
 
-    // --- Ø¹Ø±Ø¶ Ø§Ù„Ø³Ø¬Ù„ ---
+    // --- عرض السجل ---
     function renderRecs(filter = 'all') {
         let list = app.logs;
         if(app.loggedUser.role !== 'master') {
@@ -381,19 +380,19 @@
             <div class="record-item" onclick="openInvoiceView(${l.id})">
                 <span class="user-badge">${l.user}</span>
                 <div style="font-weight:bold; margin-top:8px">${l.pharm}</div>
-                <div style="font-size:0.7rem; color:#666">Ø§Ù„Ø¥Ø¬Ù…Ø§Ù„ÙŠ: ${l.total.toFixed(2)} Ø¬ | ${l.date}</div>
+                <div style="font-size:0.7rem; color:#666">الإجمالي: ${l.total.toFixed(2)} ج | ${l.date}</div>
             </div>
-        `).join('') || '<p style="text-align:center; padding:20px; color:#999">Ù„Ø§ ØªÙˆØ¬Ø¯ ÙÙˆØ§ØªÙŠØ±</p>';
+        `).join('') || '<p style="text-align:center; padding:20px; color:#999">لا توجد فواتير</p>';
     }
 
     function openInvoiceView(id) {
         const l = app.logs.find(x => x.id == id);
-        document.getElementById('inv-view-id').innerText = `ÙØ§ØªÙˆØ±Ø© Ø±Ù‚Ù… #${l.id}`;
+        document.getElementById('inv-view-id').innerText = `فاتورة رقم #${l.id}`;
         document.getElementById('inv-view-details').innerHTML = `
-            <strong>Ø§Ø³Ù… Ø§Ù„ØµÙŠØ¯Ù„ÙŠØ©:</strong> ${l.pharm}<br>
-            <strong>Ø§Ù„Ù…Ø³ØªÙ„Ù… (Ø¯ÙƒØªÙˆØ±):</strong> ${l.doc || '---'}<br>
-            <strong>Ø§Ù„ØªØ§Ø±ÙŠØ®:</strong> ${l.date}<br>
-            <strong>Ø§Ù„Ù…Ù†Ø¯ÙˆØ¨:</strong> ${l.user}
+            <strong>اسم الصيدلية:</strong> ${l.pharm}<br>
+            <strong>المستلم (دكتور):</strong> ${l.doc || '---'}<br>
+            <strong>التاريخ:</strong> ${l.date}<br>
+            <strong>المندوب:</strong> ${l.user}
         `;
         
         const tbody = document.querySelector('#inv-view-table tbody');
@@ -414,7 +413,7 @@
         document.getElementById('invoice-modal').style.display = 'block';
     }
 
-    // --- Ø§Ù„Ù…Ø®Ø²Ù† ÙˆØ§Ù„Ø­Ø§Ø³Ø¨Ø© ---
+    // --- المخزن والحاسبة ---
     function renderStock() {
         let html = '';
         for(let name in app.stock) {
@@ -422,7 +421,7 @@
             html += `
                 <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee">
                     <span>${name}</span>
-                    <span style="font-weight:bold; color:${color}">${app.stock[name]} Ø¹Ù„Ø¨Ø©</span>
+                    <span style="font-weight:bold; color:${color}">${app.stock[name]} علبة</span>
                 </div>
             `;
         }
@@ -432,14 +431,13 @@
     function addStock() {
         const id = document.getElementById('st-drug').value;
         const qty = parseInt(document.getElementById('st-qty').value);
-        if(!id || !qty) return showCustomAlert("ÙŠØ±Ø¬Ù‰ Ø§Ø®ØªÙŠØ§Ø± Ø§Ù„ØµÙ†Ù ÙˆØ¥Ø¯Ø®Ø§Ù„ Ø§Ù„ÙƒÙ…ÙŠØ©", "warning");
+        if(!id || !qty) return;
         const itm = app.drugs.find(x=>x.id==id);
         app.stock[itm.name] += qty;
         saveData();
         renderStock();
-        document.getElementById('st-drug').value = '';
         document.getElementById('st-qty').value = '';
-        showCustomAlert("ØªÙ… Ø¥Ø¶Ø§ÙØ© Ø§Ù„ÙƒÙ…ÙŠØ© Ù„Ù„Ù…Ø®Ø²Ù† âœ…", "success");
+        showCustomAlert("تم إضافة الكمية للمخزن", "success");
     }
 
     function doCalc() {
@@ -448,10 +446,10 @@
         if(!id) return;
         const itm = app.drugs.find(x=>x.id==id);
         const net = itm.price * (1 - (disc/100));
-        document.getElementById('c-unit').innerText = net.toFixed(2) + " Ø¬";
+        document.getElementById('c-unit').innerText = net.toFixed(2) + " ج";
     }
 
-    // --- Ø£Ø¯ÙˆØ§Øª Ø§Ù„Ù†Ø¸Ø§Ù… ---
+    // --- أدوات النظام ---
     function showCustomAlert(msg, type) {
         document.getElementById('alert-msg').innerText = msg;
         const icon = document.getElementById('alert-icon');
@@ -478,13 +476,13 @@
                 const btn = document.createElement('button');
                 btn.className = 'filter-btn';
                 btn.innerText = u.name;
-                btn.onclick = (e) => filterByUser(e, u.u);
+                btn.onclick = () => filterByUser(u.u);
                 filterList.appendChild(btn);
             }
         });
     }
 
-    function filterByUser(event, u_id) {
+    function filterByUser(u_id) {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
         renderRecs(u_id);
