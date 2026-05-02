@@ -53,7 +53,7 @@
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal { background: white; width: 100%; border-radius: 12px; padding: 15px; max-height: 85vh; overflow-y: auto; }
 
-        .record-item { background: white; padding: 10px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; }
+        .record-item { background: white; padding: 10px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; cursor: pointer; }
         .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 5px; }
         .delete-btn { color: var(--danger); border: none; background: none; font-size: 1rem; }
         .invoice-logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
@@ -107,9 +107,9 @@
             <button class="btn btn-main" onclick="addItem()">➕ إضافة للفاتورة</button>
         </div>
         <div id="cart-card" class="card" style="display:none">
-            <div class="card-title">قائمة الأصناف</div>
+            <div class="card-title">قائمة الأصناف المختارة</div>
             <div id="cart-list"></div>
-            <div class="total-box">إجمالي: <span id="cart-total">0</span> ج</div>
+            <div class="total-box">إجمالي الفاتورة: <span id="cart-total">0</span> ج</div>
             <label>المدفوع الآن</label>
             <input type="number" id="p-paid" placeholder="0.00" inputmode="decimal">
             <button class="btn btn-save" onclick="saveInv()">💾 حفظ الفاتورة</button>
@@ -169,23 +169,19 @@
     let mergeTargetId = null;
 
     function init() {
-        const d = localStorage.getItem('ncure_v11');
+        const d = localStorage.getItem('ncure_v12');
         if(d) app = JSON.parse(d);
         document.getElementById('p-date').valueAsDate = new Date();
         loadSelects(); renderRecs(); tick(); updatePharmDatalist();
     }
 
-    function saveData() { localStorage.setItem('ncure_v11', JSON.stringify(app)); updatePharmDatalist(); }
+    function saveData() { localStorage.setItem('ncure_v12', JSON.stringify(app)); updatePharmDatalist(); }
 
     function showScreen(idx) {
-        // إخفاء كل الشاشات
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        
-        // إظهار الشاشة المختارة
         document.getElementById('s' + idx).classList.add('active');
         document.getElementById('tab' + idx).classList.add('active');
-        
         if(idx === 1) renderRecs();
     }
 
@@ -261,8 +257,20 @@
                 history: [{ date: new Date().toLocaleString('ar-EG'), amt: paid }]
             });
         }
-        saveData(); tempCart = []; mergeTargetId = null; renderCart();
+        
+        saveData(); 
+        
+        // --- تفريغ البيانات لاستقبال فاتورة جديدة ---
+        tempCart = []; 
+        mergeTargetId = null; 
+        renderCart();
+        document.getElementById('p-pharm').value = "صيدلية / ";
+        document.getElementById('p-doc').value = "دكتور/ ";
         document.getElementById('p-paid').value = '';
+        document.getElementById('p-drug').value = '';
+        document.getElementById('pre-box').style.display = 'none';
+        document.getElementById('p-date').valueAsDate = new Date();
+        
         showScreen(1);
     }
 
@@ -277,7 +285,8 @@
             const color = rem <= 0 ? 'var(--success)' : (l.paid > 0 ? 'var(--warning)' : 'var(--danger)');
             return `<div class="record-item" onclick="openInv(${l.id})">
                 <div style="font-weight:bold; font-size:0.85rem"><span class="status-dot" style="background:${color}"></span>${l.pharm} (#${l.id})</div>
-                <div style="font-size:0.7rem; color:#666">${l.date} | المتبقي: ${rem.toFixed(1)} ج</div>
+                <div style="font-size:0.75rem; color:#444; margin-right:15px"><b>المستلم:</b> ${l.doc}</div>
+                <div style="font-size:0.7rem; color:#666; margin-right:15px">${l.date} | المتبقي: ${rem.toFixed(1)} ج</div>
             </div>`;
         }).join('');
     }
@@ -293,9 +302,7 @@
                 pharmStats[l.pharm].drugs[i.name] += i.qty;
             });
         });
-
         const sorted = Object.entries(pharmStats).sort((a,b) => b[1].total - a[1].total);
-
         document.getElementById('rec-list').innerHTML = `<div class="card-title">تحليل الصيدليات (الأكثر مبيعاً)</div>` + sorted.map(([name, data]) => {
             const bestDrug = Object.entries(data.drugs).sort((a,b) => b[1] - a[1])[0];
             return `<div class="stats-card">
@@ -329,12 +336,13 @@
                 </div>
                 <div style="font-size:0.8rem; margin:10px 0">
                     <p><b>الصيدلية:</b> ${l.pharm}</p>
+                    <p><b>المستلم:</b> ${l.doc}</p>
                     <p><b>التاريخ:</b> ${l.date}</p>
                 </div>
                 <div class="table-header" style="grid-template-columns: 2fr 1fr 1fr 1fr"><span>الصنف</span><span>سعر</span><span>كمية</span><span>صافي</span></div>
                 ${l.items.map(i=>`<div class="table-row" style="grid-template-columns: 2fr 1fr 1fr 1fr"><span>${i.name}</span><span>${i.price.toFixed(1)}</span><span>${i.qty}</span><span>${i.sub.toFixed(1)}</span></div>`).join('')}
                 <div class="total-box">الإجمالي: ${l.total.toFixed(1)} ج</div>
-                <div style="font-size:0.7rem; background:#f9f9f9; padding:5px">
+                <div style="font-size:0.7rem; background:#f9f9f9; padding:5px; border-radius:5px">
                     <b>سجل التحصيل:</b> ${l.history.map(h=>`<div>${h.date}: ${h.amt}ج</div>`).join('')}
                 </div>
                 <div style="text-align:left; color:red; font-weight:bold; margin-top:5px">المتبقي: ${(l.total-l.paid).toFixed(1)} ج</div>
@@ -384,9 +392,7 @@
     function importData(e) {
         const reader = new FileReader();
         reader.onload = (ev) => {
-            try {
-                app = JSON.parse(ev.target.result); saveData(); location.reload();
-            } catch(e) { alert('خطأ في الملف'); }
+            try { app = JSON.parse(ev.target.result); saveData(); location.reload(); } catch(e) { alert('خطأ في الملف'); }
         };
         reader.readAsText(e.target.files[0]);
     }
