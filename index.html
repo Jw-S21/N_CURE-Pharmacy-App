@@ -75,10 +75,10 @@
 <div id="login-screen">
     <div class="login-card">
         <img src="logo.png" style="width: 70px; margin-bottom: 10px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
-        <h2 style="color:var(--primary); margin-bottom:20px;">دخول النظام</h2>
+        <h2 style="color:var(--primary); margin-bottom:20px;">تسجيل الدخول</h2>
         <input type="text" id="login-user" placeholder="اسم المستخدم">
         <input type="password" id="login-pass" placeholder="كلمة المرور">
-        <button class="btn btn-main" onclick="handleLogin()">دخول <i class="fas fa-sign-in-alt"></i></button>
+        <button class="btn btn-main" onclick="handleLogin()">دخول النظام <i class="fas fa-sign-in-alt"></i></button>
         <p id="login-msg" style="color:red; font-size:0.7rem; margin-top:10px"></p>
     </div>
 </div>
@@ -96,8 +96,8 @@
     </div>
 
     <div class="tabs">
-        <button class="tab active" id="tab0" onclick="showScreen(0)"><i class="fas fa-file-invoice"></i> فاتورة</button>
-        <button class="tab" id="tab1" onclick="showScreen(1)"><i class="fas fa-history"></i> السجل</button>
+        <button class="tab active" id="tab0" onclick="showScreen(0)"><i class="fas fa-plus"></i> فاتورة</button>
+        <button class="tab" id="tab1" onclick="showScreen(1)"><i class="fas fa-box"></i> السجلات</button>
         <button class="tab" id="tab2" onclick="showScreen(2)"><i class="fas fa-warehouse"></i> المخزن</button>
         <button class="tab" id="tab3" onclick="showScreen(3)"><i class="fas fa-calculator"></i> حاسبة</button>
     </div>
@@ -105,7 +105,7 @@
     <div class="content">
         <div class="screen active" id="s0">
             <div class="card">
-                <div class="card-title">بيانات الفاتورة</div>
+                <div class="card-title">بيانات العميل</div>
                 <label>اسم الصيدلية</label>
                 <input type="text" id="p-pharm" list="pharm-list" placeholder="صيدلية / ">
                 <datalist id="pharm-list"></datalist>
@@ -115,32 +115,33 @@
                 <input type="date" id="p-date">
             </div>
             <div class="card">
-                <div class="card-title">إضافة صنف</div>
+                <div class="card-title">إضافة أصناف</div>
                 <select id="p-drug" onchange="updatePre()"></select>
                 <div style="display:flex; gap:8px">
                     <div style="flex:1"><label>خصم %</label><input type="number" id="p-disc" value="25"></div>
                     <div style="flex:1"><label>الكمية</label><input type="number" id="p-qty" value="1"></div>
                 </div>
                 <div id="pre-box" style="display:none; text-align:center; font-size:0.8rem; color:var(--primary); margin-top:8px; font-weight:bold;"></div>
-                <button class="btn btn-main" onclick="addItem()">إضافة <i class="fas fa-plus"></i></button>
+                <button class="btn btn-main" onclick="addItem()">إضافة للفاتورة <i class="fas fa-plus"></i></button>
             </div>
             <div id="cart-card" class="card" style="display:none">
+                <div class="card-title">جدول الفاتورة</div>
                 <table class="inv-table" id="cart-table">
                     <thead>
-                        <tr><th>الصنف</th><th>السعر</th><th>الصافي</th><th>كمية</th><th>إجمالي</th><th></th></tr>
+                        <tr><th>الصنف</th><th>سعر</th><th>كمية</th><th>صافي</th><th></th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
                 <div style="text-align:center; padding:15px; font-weight:bold; color:var(--primary); font-size:1.1rem;">
-                    الإجمالي: <span id="cart-total">0.00</span> ج
+                    المجموع: <span id="cart-total">0.00</span> ج
                 </div>
-                <button class="btn btn-save" onclick="saveInv()">حفظ الفاتورة <i class="fas fa-save"></i></button>
+                <button class="btn btn-save" onclick="saveInv()">حفظ الفاتورة نهائياً <i class="fas fa-save"></i></button>
             </div>
         </div>
 
         <div class="screen" id="s1">
             <div id="master-filters" style="display:none">
-                <label style="margin-bottom:5px">عرض فواتير:</label>
+                <label style="margin-bottom:5px">تصفية السجلات:</label>
                 <div class="filters" id="user-filter-list">
                     <button class="filter-btn active" onclick="filterByUser('all')">الكل</button>
                 </div>
@@ -169,7 +170,6 @@
                 <label>الخصم %</label>
                 <input type="number" id="c-disc" value="25" oninput="doCalc()">
                 <div style="text-align:center; padding:20px;">
-                    <div style="font-size:0.8rem; color:#666">صافي العلبة الواحد:</div>
                     <div id="c-unit" style="font-size:1.5rem; font-weight:bold; color:var(--primary)">0.00 ج</div>
                 </div>
             </div>
@@ -186,17 +186,14 @@
 </div>
 
 <div class="custom-alert" id="invoice-modal" style="width:95%; max-width:500px; text-align:right;">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--primary); padding-bottom:10px; margin-bottom:15px;">
-        <div style="text-align:right">
-            <h2 style="color:var(--primary)">N-CURE</h2>
-            <small id="inv-view-id"></small>
-        </div>
-        <img src="logo.png" style="height:50px" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
+    <div style="text-align:center; border-bottom:2px solid var(--primary); padding-bottom:10px; margin-bottom:15px;">
+        <h2 style="color:var(--primary)">N-CURE</h2>
+        <small id="inv-view-id"></small>
     </div>
     <div style="font-size:0.8rem; line-height:1.6; margin-bottom:15px;" id="inv-view-details"></div>
     <table class="inv-table" id="inv-view-table">
         <thead>
-            <tr><th>الصنف</th><th>السعر</th><th>الخصم</th><th>الصافي</th><th>الكمية</th><th>الإجمالي</th></tr>
+            <tr><th>الصنف</th><th>سعر</th><th>كمية</th><th>صافي</th></tr>
         </thead>
         <tbody></tbody>
     </table>
@@ -226,7 +223,7 @@
 
     const usersList = [
         { u: "janwaheed", p: "2131992", name: "Dr.Jan Waheed", role: "master" },
-        { u: "aayad", p: "123456", name: "Dr.Ahmed Ayad", role: "user" }
+        { u: "aayad", p: "123456", name: "Dr.Ahmed Ayad", role: "user" },
         { u: "aaboshaqra", p: "123456", name: "Dr.Ahmed AboShaqra", role: "user" }
     ];
 
@@ -274,7 +271,6 @@
         updatePharmDatalist();
     }
 
-    // --- وظائف الفاتورة ---
     function loadSelects() {
         const opt = '<option value="">-- اختر الصنف --</option>' + app.drugs.map(x=>`<option value="${x.id}">${x.name} (${x.price}ج)</option>`).join('');
         document.getElementById('p-drug').innerHTML = opt;
@@ -288,7 +284,7 @@
         const itm = app.drugs.find(x=>x.id==id);
         const disc = parseFloat(document.getElementById('p-disc').value) || 0;
         const net = itm.price * (1 - (disc/100));
-        document.getElementById('pre-box').innerHTML = `سعر الصنف صافي: ${net.toFixed(2)} ج`;
+        document.getElementById('pre-box').innerHTML = `صافي القطعة: ${net.toFixed(2)} ج`;
         document.getElementById('pre-box').style.display = 'block';
     }
 
@@ -299,20 +295,12 @@
         const q = parseInt(document.getElementById('p-qty').value) || 1;
         const d = parseFloat(document.getElementById('p-disc').value) || 0;
         
-        // التحقق من المخزن
         if(app.stock[itm.name] < q) {
-            return showCustomAlert("المخزن لا يكفي! الرصيد المتاح: " + app.stock[itm.name], "warning");
+            return showCustomAlert("المخزن لا يكفي! المتاح: " + app.stock[itm.name], "warning");
         }
 
         const net = itm.price * (1 - (d/100));
-        tempCart.push({ 
-            name: itm.name, 
-            price: itm.price, 
-            disc: d, 
-            net: net, 
-            qty: q, 
-            sub: net * q 
-        });
+        tempCart.push({ name: itm.name, price: itm.price, disc: d, net: net, qty: q, sub: net * q });
         renderCart();
     }
 
@@ -324,7 +312,6 @@
             <tr>
                 <td>${i.name}</td>
                 <td>${i.price}</td>
-                <td>${i.net.toFixed(2)}</td>
                 <td>${i.qty}</td>
                 <td>${i.sub.toFixed(2)}</td>
                 <td><i class="fas fa-trash" style="color:red" onclick="removeItem(${idx})"></i></td>
@@ -340,13 +327,12 @@
 
     function saveInv() {
         const pharm = document.getElementById('p-pharm').value;
-        const doc = document.getElementById('p-doc').value;
-        if(!pharm || tempCart.length === 0) return showCustomAlert("يرجى إكمال بيانات الفاتورة", "warning");
+        if(!pharm || tempCart.length === 0) return showCustomAlert("يرجى إكمال البيانات", "warning");
 
         const newInv = {
             id: app.next++,
             pharm: pharm,
-            doc: doc,
+            doc: document.getElementById('p-doc').value,
             date: document.getElementById('p-date').value,
             items: [...tempCart],
             total: tempCart.reduce((a,b)=>a+b.sub, 0),
@@ -354,28 +340,20 @@
             u_id: app.loggedUser.u
         };
 
-        // خصم من المخزن
-        tempCart.forEach(item => {
-            app.stock[item.name] -= item.qty;
-        });
-
+        tempCart.forEach(item => app.stock[item.name] -= item.qty);
         app.logs.unshift(newInv);
         saveData();
         tempCart = [];
         renderCart();
         renderStock();
-        showCustomAlert("تم حفظ الفاتورة وتحديث المخزن بنجاح ✅", "success");
+        showCustomAlert("تم الحفظ بنجاح ✅", "success");
         showScreen(1);
     }
 
-    // --- عرض السجل ---
     function renderRecs(filter = 'all') {
         let list = app.logs;
-        if(app.loggedUser.role !== 'master') {
-            list = list.filter(l => l.u_id === app.loggedUser.u);
-        } else if(filter !== 'all') {
-            list = list.filter(l => l.u_id === filter);
-        }
+        if(app.loggedUser.role !== 'master') list = list.filter(l => l.u_id === app.loggedUser.u);
+        else if(filter !== 'all') list = list.filter(l => l.u_id === filter);
 
         document.getElementById('rec-list').innerHTML = list.map(l => `
             <div class="record-item" onclick="openInvoiceView(${l.id})">
@@ -383,48 +361,32 @@
                 <div style="font-weight:bold; margin-top:8px">${l.pharm}</div>
                 <div style="font-size:0.7rem; color:#666">الإجمالي: ${l.total.toFixed(2)} ج | ${l.date}</div>
             </div>
-        `).join('') || '<p style="text-align:center; padding:20px; color:#999">لا توجد فواتير</p>';
+        `).join('') || '<p style="text-align:center; padding:20px; color:#999">لا توجد سجلات</p>';
     }
 
     function openInvoiceView(id) {
         const l = app.logs.find(x => x.id == id);
         document.getElementById('inv-view-id').innerText = `فاتورة رقم #${l.id}`;
         document.getElementById('inv-view-details').innerHTML = `
-            <strong>اسم الصيدلية:</strong> ${l.pharm}<br>
-            <strong>المستلم (دكتور):</strong> ${l.doc || '---'}<br>
-            <strong>التاريخ:</strong> ${l.date}<br>
-            <strong>المندوب:</strong> ${l.user}
+            <strong>الصيدلية:</strong> ${l.pharm}<br>
+            <strong>المستلم:</strong> ${l.doc || '---'}<br>
+            <strong>التاريخ:</strong> ${l.date}
         `;
         
-        const tbody = document.querySelector('#inv-view-table tbody');
-        tbody.innerHTML = l.items.map(i => `
-            <tr>
-                <td>${i.name}</td>
-                <td>${i.price}</td>
-                <td>${i.disc}%</td>
-                <td>${i.net.toFixed(2)}</td>
-                <td>${i.qty}</td>
-                <td>${i.sub.toFixed(2)}</td>
-            </tr>
+        document.querySelector('#inv-view-table tbody').innerHTML = l.items.map(i => `
+            <tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${i.sub.toFixed(2)}</td></tr>
         `).join('');
 
         document.getElementById('inv-view-total').innerText = l.total.toFixed(2);
-        
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('invoice-modal').style.display = 'block';
     }
 
-    // --- المخزن والحاسبة ---
     function renderStock() {
         let html = '';
         for(let name in app.stock) {
-            const color = app.stock[name] < 10 ? 'red' : 'var(--primary)';
-            html += `
-                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee">
-                    <span>${name}</span>
-                    <span style="font-weight:bold; color:${color}">${app.stock[name]} علبة</span>
-                </div>
-            `;
+            html += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee">
+                <span>${name}</span><span style="font-weight:bold">${app.stock[name]}</span></div>`;
         }
         document.getElementById('stock-list').innerHTML = html;
     }
@@ -433,35 +395,28 @@
         const id = document.getElementById('st-drug').value;
         const qty = parseInt(document.getElementById('st-qty').value);
         if(!id || !qty) return;
-        const itm = app.drugs.find(x=>x.id==id);
-        app.stock[itm.name] += qty;
-        saveData();
-        renderStock();
+        app.stock[app.drugs.find(x=>x.id==id).name] += qty;
+        saveData(); renderStock();
         document.getElementById('st-qty').value = '';
-        showCustomAlert("تم إضافة الكمية للمخزن", "success");
+        showCustomAlert("تم تحديث المخزن", "success");
     }
 
     function doCalc() {
         const id = document.getElementById('c-drug').value;
-        const disc = parseFloat(document.getElementById('c-disc').value) || 0;
         if(!id) return;
-        const itm = app.drugs.find(x=>x.id==id);
-        const net = itm.price * (1 - (disc/100));
+        const disc = parseFloat(document.getElementById('c-disc').value) || 0;
+        const net = app.drugs.find(x=>x.id==id).price * (1 - (disc/100));
         document.getElementById('c-unit').innerText = net.toFixed(2) + " ج";
     }
 
-    // --- أدوات النظام ---
     function showCustomAlert(msg, type) {
         document.getElementById('alert-msg').innerText = msg;
-        const icon = document.getElementById('alert-icon');
-        icon.innerHTML = type === 'success' ? '<i class="fas fa-check-circle" style="color:var(--success)"></i>' : '<i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i>';
+        document.getElementById('alert-icon').innerHTML = type === 'success' ? '<i class="fas fa-check-circle" style="color:var(--success)"></i>' : '<i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i>';
         document.getElementById('overlay').style.display = 'block';
         document.getElementById('custom-alert').style.display = 'block';
     }
 
-    function closeAllModals() {
-        document.querySelectorAll('.custom-alert, .overlay').forEach(el => el.style.display = 'none');
-    }
+    function closeAllModals() { document.querySelectorAll('.custom-alert, .overlay').forEach(el => el.style.display = 'none'); }
 
     function showScreen(idx) {
         document.querySelectorAll('.screen, .tab').forEach(el => el.classList.remove('active'));
@@ -471,22 +426,19 @@
     }
 
     function loadUserFilters() {
-        const filterList = document.getElementById('user-filter-list');
         usersList.forEach(u => {
             if(u.role !== 'master') {
                 const btn = document.createElement('button');
                 btn.className = 'filter-btn';
                 btn.innerText = u.name;
-                btn.onclick = () => filterByUser(u.u);
-                filterList.appendChild(btn);
+                btn.onclick = (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    renderRecs(u.u);
+                };
+                document.getElementById('user-filter-list').appendChild(btn);
             }
         });
-    }
-
-    function filterByUser(u_id) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        renderRecs(u_id);
     }
 
     function updatePharmDatalist() {
@@ -495,7 +447,6 @@
     }
 
     function tick() { document.getElementById('clock').innerText = new Date().toLocaleString('ar-EG'); setTimeout(tick, 1000); }
-
 </script>
 </body>
 </html>
