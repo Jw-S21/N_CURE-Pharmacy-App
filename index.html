@@ -4,26 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1a6b3c">
-    <title>N-CURE</title>
+    <title>N-CURE Pro System</title>
 
-    <link rel="icon" type="image/png" href="logo.png">
-    <link rel="apple-touch-icon" href="logo.png">
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22N-CURE%22%2C%22short_name%22%3A%22N-CURE%22%2C%22start_url%22%3A%22index.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a6b3c%22%2C%22theme_color%22%3A%22%231a6b3c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22logo.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
 
     <style>
-        :root { --primary: #1a6b3c; --primary-dark: #0f4024; --bg: #f2f2f2; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: #333; line-height: 1.3; }
+        :root { --primary: #1a6b3c; --bg: #f2f2f2; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --partial: #3b82f6; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: #333; overflow-x: hidden; }
 
+        /* شاشة تسجيل الدخول */
+        #login-screen { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+        .login-card { background: white; width: 100%; max-width: 350px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        .login-card img { width: 80px; margin-bottom: 15px; }
+
+        /* الواجهة الأساسية */
+        #main-app { display: none; }
         .header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
-        .header h1 { font-size: 1.2rem; font-weight: bold; }
-        .settings-btn { background: none; border: none; font-size: 1.3rem; color: white; cursor: pointer; }
-
         .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; }
-        .tab { flex: 1; padding: 12px; border: none; background: none; font-weight: bold; color: #666; font-size: 0.85rem; cursor: pointer; }
+        .tab { flex: 1; padding: 12px; border: none; background: none; font-weight: bold; color: #666; font-size: 0.8rem; cursor: pointer; }
         .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: #f9f9f9; }
 
         .content { padding: 8px; }
@@ -34,124 +34,123 @@
         .card-title { font-size: 0.8rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; border-right: 3px solid var(--primary); padding-right: 6px; }
 
         label { font-size: 0.7rem; font-weight: bold; display: block; margin-top: 4px; color: #555; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; margin-top: 2px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; margin-top: 2px; }
         
-        .btn { padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 8px; font-size: 0.9rem; transition: 0.2s; text-align: center; }
+        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 8px; font-size: 0.9rem; transition: 0.3s; }
         .btn-main { background: var(--primary); color: white; }
         .btn-save { background: var(--success); color: white; }
+        .btn-excel { background: #1d6f42; color: white; }
         .btn-close { background: #eee; color: #333; }
-        .btn-outline { background: white; border: 1px solid var(--primary); color: var(--primary); }
 
         .filters { display: flex; gap: 4px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px; }
-        .filter-btn { padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 0.7rem; white-space: nowrap; cursor: pointer; }
-        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .filter-btn { padding: 8px 12px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 0.7rem; white-space: nowrap; cursor: pointer; font-weight: bold; }
+        .filter-btn.active { background: var(--primary); color: white; }
 
-        .table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; background: #eee; padding: 5px; font-size: 0.65rem; font-weight: bold; margin-top: 10px; }
-        .table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; padding: 5px; font-size: 0.75rem; border-bottom: 1px solid #f0f0f0; align-items: center; }
+        .record-item { background: white; padding: 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; position: relative; }
+        .user-badge { position: absolute; left: 10px; top: 10px; font-size: 0.6rem; background: #e8f5e9; color: var(--primary); padding: 2px 6px; border-radius: 4px; }
+        
         .total-box { text-align: center; padding: 10px; font-weight: bold; color: var(--primary); font-size: 1.1rem; }
-
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal { background: white; width: 100%; border-radius: 12px; padding: 15px; max-height: 85vh; overflow-y: auto; }
 
-        .record-item { background: white; padding: 10px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; cursor: pointer; }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 5px; }
-        .delete-btn { color: var(--danger); border: none; background: none; font-size: 1rem; }
-        .invoice-logo { width: 60px; height: 60px; object-fit: contain; margin-bottom: 5px; }
-
-        .stats-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 0.75rem; }
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 5px; }
-
-        @media print {
-            .header, .tabs, .filters, .btn, input, select, .settings-btn { display: none !important; }
-            .modal-overlay { position: static; background: white; display: block; }
-            .modal { box-shadow: none; max-height: none; width: 100%; border: none; }
-        }
+        .table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; padding: 5px; font-size: 0.75rem; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div>
-        <h1>N-CURE</h1>
-        <small id="clock" style="font-size: 0.6rem;"></small>
+<div id="login-screen">
+    <div class="login-card">
+        <img src="logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
+        <h2 style="color:var(--primary); margin-bottom:20px;">تسجيل الدخول</h2>
+        <input type="text" id="login-user" placeholder="اسم المستخدم" style="margin-bottom:10px">
+        <input type="password" id="login-pass" placeholder="كلمة المرور">
+        <button class="btn btn-main" onclick="handleLogin()">دخول النظام</button>
+        <p id="login-msg" style="color:red; font-size:0.7rem; margin-top:10px"></p>
     </div>
-    <button class="settings-btn" onclick="openModal('settings-modal')">⚙️</button>
 </div>
 
-<div class="tabs">
-    <button class="tab active" id="tab0" onclick="showScreen(0)">➕ جديد</button>
-    <button class="tab" id="tab1" onclick="showScreen(1)">📦 الفواتير</button>
-    <button class="tab" id="tab2" onclick="showScreen(2)">🧮 الحاسبة</button>
-</div>
-
-<div class="content">
-    <div class="screen active" id="s0">
-        <div class="card">
-            <div class="card-title">بيانات العميل</div>
-            <label>اسم الصيدلية</label>
-            <input type="text" id="p-pharm" list="pharm-list" onblur="checkPharmExists()" value="صيدلية / ">
-            <datalist id="pharm-list"></datalist>
-            <label>المستلم (دكتور)</label>
-            <input type="text" id="p-doc" value="دكتور/ ">
-            <label>التاريخ</label>
-            <input type="date" id="p-date">
+<div id="main-app">
+    <div class="header">
+        <div>
+            <h1 style="font-size:1.1rem" id="display-user-name">N-CURE Master</h1>
+            <small id="clock" style="font-size: 0.6rem; opacity:0.8"></small>
         </div>
-        <div class="card">
-            <div class="card-title">إضافة أصناف</div>
-            <select id="p-drug" onchange="updatePre()"></select>
-            <div style="display:flex; gap:5px">
-                <div style="flex:1"><label>خصم%</label><input type="number" id="p-disc" value="25" inputmode="decimal" oninput="updatePre()"></div>
-                <div style="flex:1"><label>كمية</label><input type="number" id="p-qty" value="1" inputmode="numeric" oninput="updatePre()"></div>
-            </div>
-            <div id="pre-box" style="display:none; text-align:center; font-size:0.8rem; color:var(--primary); margin-top:5px; font-weight:bold;"></div>
-            <button class="btn btn-main" onclick="addItem()">➕ إضافة للفاتورة</button>
-        </div>
-        <div id="cart-card" class="card" style="display:none">
-            <div class="card-title">قائمة الأصناف المختارة</div>
-            <div id="cart-list"></div>
-            <div class="total-box">إجمالي الفاتورة: <span id="cart-total">0</span> ج</div>
-            <label>المدفوع الآن</label>
-            <input type="number" id="p-paid" placeholder="0.00" inputmode="decimal">
-            <button class="btn btn-save" onclick="saveInv()">💾 حفظ الفاتورة</button>
-        </div>
+        <button class="btn" style="width:auto; padding:5px 10px; background:rgba(255,255,255,0.2); color:white" onclick="location.reload()">خروج</button>
+        <button onclick="openModal('settings-modal')" style="background:none; border:none; color:white; font-size:1.2rem">⚙️</button>
     </div>
 
-    <div class="screen" id="s1">
-        <div class="filters">
-            <button class="filter-btn active" id="f-all" onclick="filterRecs('all')">الكل</button>
-            <button class="filter-btn" id="f-unpaid" onclick="filterRecs('unpaid')">غير مسدد</button>
-            <button class="filter-btn" id="f-paid" onclick="filterRecs('paid')">مسدد</button>
-            <button class="filter-btn" id="f-stats" onclick="filterRecs('stats')" style="border-color:var(--primary); color:var(--primary)">📊 الإحصائيات</button>
-        </div>
-        <div id="rec-list"></div>
+    <div class="tabs">
+        <button class="tab active" id="tab0" onclick="showScreen(0)">➕ فاتورة</button>
+        <button class="tab" id="tab1" onclick="showScreen(1)">📦 الفواتير</button>
+        <button class="tab" id="tab2" onclick="showScreen(2)">🧮 الحاسبة</button>
     </div>
 
-    <div class="screen" id="s2">
-        <div class="card">
-            <div class="card-title">حاسبة الخصم والكمية</div>
-            <select id="c-drug" onchange="doCalc()"></select>
-            <div style="display:flex; gap:5px">
-                <div style="flex:1"><label>الخصم %</label><input type="number" id="c-disc" value="25" inputmode="decimal" oninput="doCalc()"></div>
-                <div style="flex:1"><label>الكمية</label><input type="number" id="c-qty" value="1" inputmode="numeric" oninput="doCalc()"></div>
+    <div class="content">
+        <div class="screen active" id="s0">
+            <div class="card">
+                <div class="card-title">بيانات العميل</div>
+                <label>اسم الصيدلية</label>
+                <input type="text" id="p-pharm" list="pharm-list" onblur="checkPharmExists()" value="صيدلية / ">
+                <datalist id="pharm-list"></datalist>
+                <label>المستلم (دكتور)</label>
+                <input type="text" id="p-doc" value="دكتور/ ">
+                <label>التاريخ</label>
+                <input type="date" id="p-date">
             </div>
-            <div class="total-box" id="c-res">0.00 ج</div>
-            <small id="c-unit" style="display:block; text-align:center; color:#666; font-size:0.7rem"></small>
+            <div class="card">
+                <div class="card-title">إضافة صنف</div>
+                <select id="p-drug" onchange="updatePre()"></select>
+                <div style="display:flex; gap:5px">
+                    <div style="flex:1"><label>خصم %</label><input type="number" id="p-disc" value="25" step="0.01" oninput="updatePre()"></div>
+                    <div style="flex:1"><label>كمية</label><input type="number" id="p-qty" value="1" oninput="updatePre()"></div>
+                </div>
+                <div id="pre-box" style="display:none; text-align:center; font-size:0.8rem; color:var(--primary); margin-top:5px; font-weight:bold;"></div>
+                <button class="btn btn-main" onclick="addItem()">➕ إضافة للفاتورة</button>
+            </div>
+            <div id="cart-card" class="card" style="display:none">
+                <div id="cart-list"></div>
+                <div class="total-box">الإجمالي الدقيق: <span id="cart-total">0.00</span> ج</div>
+                <label>المدفوع الآن</label>
+                <input type="number" id="p-paid" placeholder="0.00" step="0.01">
+                <button class="btn btn-save" onclick="saveInv()">💾 حفظ الفاتورة</button>
+            </div>
+        </div>
+
+        <div class="screen" id="s1">
+            <div class="filters">
+                <button class="filter-btn active" id="f-all" onclick="filterRecs('all')">الكل</button>
+                <button class="filter-btn" id="f-unpaid" onclick="filterRecs('unpaid')">غير مسدد</button>
+                <button class="filter-btn" id="f-partial" onclick="filterRecs('partial')">جزئي</button>
+                <button class="filter-btn" id="f-paid" onclick="filterRecs('paid')">تم السداد</button>
+                <button class="filter-btn" id="f-stats" onclick="filterRecs('stats')">📊 إحصائيات</button>
+            </div>
+            <div id="rec-list"></div>
+        </div>
+
+        <div class="screen" id="s2">
+            <div class="card">
+                <div class="card-title">الحاسبة المالية الدقيقة</div>
+                <select id="c-drug" onchange="doCalc()"></select>
+                <div style="display:flex; gap:5px">
+                    <div style="flex:1"><label>الخصم %</label><input type="number" id="c-disc" value="25" step="0.01" oninput="doCalc()"></div>
+                    <div style="flex:1"><label>الكمية</label><input type="number" id="c-qty" value="1" oninput="doCalc()"></div>
+                </div>
+                <div class="total-box" id="c-res">0.00 ج</div>
+                <div id="c-unit" style="text-align:center; color:var(--primary); font-size:0.8rem"></div>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="modal-overlay" id="settings-modal">
     <div class="modal">
-        <div class="card-title">⚙️ الإعدادات</div>
-        <div style="background:#f9f9f9; padding:10px; border-radius:8px">
-            <label>منتج جديد</label><input type="text" id="new-drug-name">
-            <label>السعر</label><input type="number" id="new-drug-price" inputmode="decimal">
-            <button class="btn btn-save" onclick="addNewDrug()">➕ إضافة للمخزن</button>
-        </div>
-        <button class="btn btn-outline" style="margin-top:15px" onclick="exportData()">📤 تصدير JSON</button>
-        <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">📥 استيراد JSON</button>
-        <input type="file" id="import-file" style="display:none" onchange="importData(event)">
-        <button class="btn" style="background:#fee2e2; color:red; margin-top:20px" onclick="clearData()">🗑️ مسح الكل</button>
+        <div class="card-title">إدارة البيانات والإكسيل</div>
+        <button class="btn btn-excel" onclick="exportToExcel()">📥 تصدير كل الفواتير (Excel)</button>
+        <hr style="margin:15px 0">
+        <label>إضافة دواء للمخزن</label>
+        <input type="text" id="new-drug-name" placeholder="الاسم">
+        <input type="number" id="new-drug-price" placeholder="السعر الرسمي">
+        <button class="btn btn-save" onclick="addNewDrug()">حفظ الصنف</button>
         <button class="btn btn-close" onclick="closeModal('settings-modal')">إغلاق</button>
     </div>
 </div>
@@ -162,58 +161,69 @@
     let app = { 
         drugs: [{id:1, name:'Vitamin D-400', price:50}, {id:2, name:'Probiotic', price:125}], 
         logs: [], 
-        next: 101 
+        next: 101,
+        loggedUser: ''
     };
     let tempCart = [];
     let currentFilter = 'all';
-    let mergeTargetId = null;
 
-    function init() {
-        const d = localStorage.getItem('ncure_v12');
-        if(d) app = JSON.parse(d);
-        document.getElementById('p-date').valueAsDate = new Date();
-        loadSelects(); renderRecs(); tick(); updatePharmDatalist();
+    // بيانات المستخدمين (يمكنك إضافة المزيد هنا)
+    const usersList = [
+        { u: "admin", p: "123", name: "Jan Master" },
+        { u: "n-cure1", p: "456", name: "محروس" },
+        { u: "n-cure2", p: "789", name: "أحمد" }
+    ];
+
+    function handleLogin() {
+        const u = document.getElementById('login-user').value.toLowerCase();
+        const p = document.getElementById('login-pass').value;
+        const user = usersList.find(x => x.u === u && x.p === p);
+
+        if(user) {
+            app.loggedUser = user.name;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+            document.getElementById('display-user-name').innerText = user.name;
+            init();
+        } else {
+            document.getElementById('login-msg').innerText = "خطأ في اسم المستخدم أو كلمة المرور";
+        }
     }
 
-    function saveData() { localStorage.setItem('ncure_v12', JSON.stringify(app)); updatePharmDatalist(); }
+    function init() {
+        const d = localStorage.getItem('ncure_v20');
+        if(d) {
+            const saved = JSON.parse(d);
+            app.logs = saved.logs;
+            app.drugs = saved.drugs;
+            app.next = saved.next;
+        }
+        document.getElementById('p-date').valueAsDate = new Date();
+        loadSelects(); updatePharmDatalist(); tick();
+    }
+
+    function saveData() { localStorage.setItem('ncure_v20', JSON.stringify(app)); updatePharmDatalist(); }
 
     function showScreen(idx) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.screen, .tab').forEach(el => el.classList.remove('active'));
         document.getElementById('s' + idx).classList.add('active');
         document.getElementById('tab' + idx).classList.add('active');
         if(idx === 1) renderRecs();
     }
 
     function loadSelects() {
-        const opt = '<option value="">-- اختر صنف --</option>' + app.drugs.map(x=>`<option value="${x.id}">${x.name} (${x.price}ج)</option>`).join('');
+        const opt = '<option value="">-- اختر الصنف --</option>' + app.drugs.map(x=>`<option value="${x.id}">${x.name} (${x.price}ج)</option>`).join('');
         document.getElementById('p-drug').innerHTML = opt;
         document.getElementById('c-drug').innerHTML = opt;
-    }
-
-    function updatePharmDatalist() {
-        const pharms = [...new Set(app.logs.map(l => l.pharm))];
-        document.getElementById('pharm-list').innerHTML = pharms.map(p => `<option value="${p}">`).join('');
-    }
-
-    function checkPharmExists() {
-        const name = document.getElementById('p-pharm').value.trim();
-        if (name === "صيدلية /" || !name) return;
-        const lastInv = app.logs.find(l => l.pharm === name && l.paid < l.total);
-        if (lastInv) {
-            if (confirm(`الصيدلية "${name}" لديها فاتورة غير مسددة بالكامل (رقم ${lastInv.id}). هل تريد إضافة الأصناف الجديدة إليها؟`)) {
-                mergeTargetId = lastInv.id;
-                document.getElementById('p-doc').value = lastInv.doc;
-            } else { mergeTargetId = null; }
-        } else { mergeTargetId = null; }
     }
 
     function updatePre() {
         const id = document.getElementById('p-drug').value;
         if(!id) return;
         const itm = app.drugs.find(x=>x.id==id);
-        const net = itm.price * (1 - (document.getElementById('p-disc').value/100));
-        document.getElementById('pre-box').innerHTML = `صافي القطعة: ${net.toFixed(2)} ج`;
+        const disc = parseFloat(document.getElementById('p-disc').value) || 0;
+        const net = itm.price * (1 - (disc/100));
+        document.getElementById('pre-box').innerHTML = `السعر الصافي للعلبة: ${net.toFixed(2)} ج`;
         document.getElementById('pre-box').style.display = 'block';
     }
 
@@ -221,187 +231,175 @@
         const id = document.getElementById('p-drug').value;
         if(!id) return;
         const itm = app.drugs.find(x=>x.id==id);
-        const net = itm.price * (1 - (document.getElementById('p-disc').value/100));
+        const disc = parseFloat(document.getElementById('p-disc').value) || 0;
         const q = parseFloat(document.getElementById('p-qty').value) || 1;
+        const net = itm.price * (1 - (disc/100));
         tempCart.push({ id: Date.now(), name: itm.name, price: net, qty: q, sub: net * q });
         renderCart();
     }
 
     function renderCart() {
         document.getElementById('cart-card').style.display = tempCart.length ? 'block' : 'none';
-        document.getElementById('cart-list').innerHTML = tempCart.map(i=>`<div class="table-row"><span>${i.name}</span><span>${i.price.toFixed(1)}</span><span>${i.qty}</span><span>${i.sub.toFixed(1)}</span><button class="delete-btn" onclick="removeItem(${i.id})">🗑️</button></div>`).join('');
+        document.getElementById('cart-list').innerHTML = tempCart.map(i=>`<div class="table-row"><span>${i.name}</span><span>${i.price.toFixed(2)}</span><span>${i.qty}</span><span>${i.sub.toFixed(2)}</span><button onclick="removeItem(${i.id})" style="border:none; color:red; background:none">🗑️</button></div>`).join('');
         document.getElementById('cart-total').innerText = tempCart.reduce((a,b)=>a+b.sub, 0).toFixed(2);
     }
 
     function removeItem(tid) { tempCart = tempCart.filter(x=>x.id!==tid); renderCart(); }
 
     function saveInv() {
-        const total = tempCart.reduce((a,b)=>a+b.sub, 0);
+        const total = parseFloat(tempCart.reduce((a,b)=>a+b.sub, 0).toFixed(2));
         const paid = parseFloat(document.getElementById('p-paid').value) || 0;
-
-        if (mergeTargetId) {
-            const inv = app.logs.find(l => l.id === mergeTargetId);
-            inv.items.push(...tempCart);
-            inv.total += total;
-            inv.paid += paid;
-            if(paid > 0) inv.history.unshift({ date: new Date().toLocaleString('ar-EG'), amt: paid });
-            alert(`تم الدمج مع الفاتورة رقم ${mergeTargetId}`);
-        } else {
-            app.logs.unshift({
-                id: app.next++,
-                pharm: document.getElementById('p-pharm').value,
-                doc: document.getElementById('p-doc').value,
-                date: document.getElementById('p-date').value,
-                items: [...tempCart],
-                total, paid,
-                history: [{ date: new Date().toLocaleString('ar-EG'), amt: paid }]
-            });
-        }
         
-        saveData(); 
+        app.logs.unshift({
+            id: app.next++,
+            createdBy: app.loggedUser,
+            pharm: document.getElementById('p-pharm').value,
+            doc: document.getElementById('p-doc').value,
+            date: document.getElementById('p-date').value,
+            items: [...tempCart],
+            total: total,
+            paid: paid,
+            history: [{ date: new Date().toLocaleString('ar-EG'), amt: paid }]
+        });
         
-        // --- تفريغ البيانات لاستقبال فاتورة جديدة ---
-        tempCart = []; 
-        mergeTargetId = null; 
-        renderCart();
+        saveData();
+        // تفريغ فوري
+        tempCart = []; renderCart();
         document.getElementById('p-pharm').value = "صيدلية / ";
         document.getElementById('p-doc').value = "دكتور/ ";
-        document.getElementById('p-paid').value = '';
-        document.getElementById('p-drug').value = '';
-        document.getElementById('pre-box').style.display = 'none';
-        document.getElementById('p-date').valueAsDate = new Date();
-        
+        document.getElementById('p-paid').value = "";
+        alert("تم حفظ الفاتورة بنجاح");
         showScreen(1);
     }
 
     function renderRecs() {
         if(currentFilter === 'stats') return renderStats();
         let list = app.logs;
-        if(currentFilter === 'unpaid') list = list.filter(l => l.paid < l.total);
+        if(currentFilter === 'unpaid') list = list.filter(l => l.paid === 0);
+        if(currentFilter === 'partial') list = list.filter(l => l.paid > 0 && l.paid < l.total);
         if(currentFilter === 'paid') list = list.filter(l => l.paid >= l.total);
 
         document.getElementById('rec-list').innerHTML = list.map(l=>{
             const rem = l.total - l.paid;
-            const color = rem <= 0 ? 'var(--success)' : (l.paid > 0 ? 'var(--warning)' : 'var(--danger)');
+            const status = rem <= 0 ? {c:'var(--success)', t:'مسدد'} : (l.paid > 0 ? {c:'var(--partial)', t:'جزئي'} : {c:'var(--danger)', t:'غير مسدد'});
             return `<div class="record-item" onclick="openInv(${l.id})">
-                <div style="font-weight:bold; font-size:0.85rem"><span class="status-dot" style="background:${color}"></span>${l.pharm} (#${l.id})</div>
-                <div style="font-size:0.75rem; color:#444; margin-right:15px"><b>المستلم:</b> ${l.doc}</div>
-                <div style="font-size:0.7rem; color:#666; margin-right:15px">${l.date} | المتبقي: ${rem.toFixed(1)} ج</div>
+                <span class="user-badge">${l.createdBy}</span>
+                <div style="font-weight:bold; font-size:0.85rem; margin-top:12px">${l.pharm}</div>
+                <div style="font-size:0.7rem; color:#666">المتبقي: ${rem.toFixed(2)} ج | ${l.date}</div>
             </div>`;
         }).join('');
     }
 
     function renderStats() {
-        const pharmStats = {};
-        app.logs.forEach(l => {
-            if(!pharmStats[l.pharm]) pharmStats[l.pharm] = { total: 0, orders: 0, drugs: {} };
-            pharmStats[l.pharm].total += l.total;
-            pharmStats[l.pharm].orders += 1;
-            l.items.forEach(i => {
-                if(!pharmStats[l.pharm].drugs[i.name]) pharmStats[l.pharm].drugs[i.name] = 0;
-                pharmStats[l.pharm].drugs[i.name] += i.qty;
-            });
-        });
-        const sorted = Object.entries(pharmStats).sort((a,b) => b[1].total - a[1].total);
-        document.getElementById('rec-list').innerHTML = `<div class="card-title">تحليل الصيدليات (الأكثر مبيعاً)</div>` + sorted.map(([name, data]) => {
-            const bestDrug = Object.entries(data.drugs).sort((a,b) => b[1] - a[1])[0];
-            return `<div class="stats-card">
-                <div style="font-weight:bold; color:var(--primary); font-size:0.9rem">${name}</div>
-                <div class="stats-grid">
-                    <span>عدد الفواتير: ${data.orders}</span>
-                    <span style="color:var(--success)">إجمالي: ${data.total.toFixed(1)} ج</span>
-                    <span style="grid-column: span 2; border-top: 1px dashed #ccc; padding-top:4px">
-                        أكثر صنف: ${bestDrug ? bestDrug[0] + ' (' + bestDrug[1] + ' قطعة)' : 'N/A'}
-                    </span>
-                </div>
-            </div>`;
-        }).join('');
+        const totalSales = app.logs.reduce((a,b)=> a + b.total, 0);
+        const totalPaid = app.logs.reduce((a,b)=> a + b.paid, 0);
+        document.getElementById('rec-list').innerHTML = `
+            <div class="card" style="background:var(--primary); color:white">
+                <div style="font-size:0.8rem">إجمالي مبيعات الفريق</div>
+                <div style="font-size:1.5rem; font-weight:bold">${totalSales.toFixed(2)} ج</div>
+            </div>
+            <div class="card">
+                <div style="font-size:0.8rem">إجمالي التحصيل</div>
+                <div style="font-size:1.5rem; font-weight:bold; color:var(--success)">${totalPaid.toFixed(2)} ج</div>
+            </div>
+        `;
     }
 
-    function filterRecs(f) { 
-        currentFilter = f; 
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('f-' + f).classList.add('active');
-        renderRecs(); 
+    function exportToExcel() {
+        if(app.logs.length === 0) return alert("لا توجد فواتير لتصديرها");
+        
+        // تجهيز البيانات للاكسيل
+        const data = app.logs.map(l => ({
+            "رقم الفاتورة": l.id,
+            "المندوب": l.createdBy,
+            "اسم الصيدلية": l.pharm,
+            "الدكتور": l.doc,
+            "التاريخ": l.date,
+            "إجمالي الفاتورة": l.total,
+            "المبلغ المحصل": l.paid,
+            "المتبقي": (l.total - l.paid).toFixed(2),
+            "الأصناف": l.items.map(i => `${i.name}(${i.qty})`).join(' - ')
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Foutayer");
+        XLSX.writeFile(wb, `N-CURE_Report_${new Date().toLocaleDateString()}.xlsx`);
+    }
+
+    function filterRecs(f) {
+        currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.id === 'f-'+f));
+        renderRecs();
     }
 
     function openInv(id) {
         const l = app.logs.find(x=>x.id==id);
         document.getElementById('inv-details-content').innerHTML = `
-            <div id="printable-area" style="text-align:right">
-                <div style="text-align:center; border-bottom:2px solid var(--primary)">
-                    <img src="logo.png" class="invoice-logo" onerror="this.style.display='none'">
-                    <h2 style="color:var(--primary)">N-CURE</h2>
-                    <p style="font-size:0.8rem">فاتورة رقم #${l.id}</p>
+            <div style="text-align:right">
+                <h3 style="color:var(--primary); text-align:center">تفاصيل الفاتورة #${l.id}</h3>
+                <p style="font-size:0.8rem">بواسطة: ${l.createdBy}</p>
+                <hr style="margin:10px 0">
+                <p><b>الصيدلية:</b> ${l.pharm}</p>
+                <p><b>المستلم:</b> ${l.doc}</p>
+                <div style="margin:10px 0; background:#f9f9f9; padding:5px">
+                    ${l.items.map(i=>`<div>${i.name} (x${i.qty}) = ${i.sub.toFixed(2)} ج</div>`).join('')}
                 </div>
-                <div style="font-size:0.8rem; margin:10px 0">
-                    <p><b>الصيدلية:</b> ${l.pharm}</p>
-                    <p><b>المستلم:</b> ${l.doc}</p>
-                    <p><b>التاريخ:</b> ${l.date}</p>
-                </div>
-                <div class="table-header" style="grid-template-columns: 2fr 1fr 1fr 1fr"><span>الصنف</span><span>سعر</span><span>كمية</span><span>صافي</span></div>
-                ${l.items.map(i=>`<div class="table-row" style="grid-template-columns: 2fr 1fr 1fr 1fr"><span>${i.name}</span><span>${i.price.toFixed(1)}</span><span>${i.qty}</span><span>${i.sub.toFixed(1)}</span></div>`).join('')}
-                <div class="total-box">الإجمالي: ${l.total.toFixed(1)} ج</div>
-                <div style="font-size:0.7rem; background:#f9f9f9; padding:5px; border-radius:5px">
-                    <b>سجل التحصيل:</b> ${l.history.map(h=>`<div>${h.date}: ${h.amt}ج</div>`).join('')}
-                </div>
-                <div style="text-align:left; color:red; font-weight:bold; margin-top:5px">المتبقي: ${(l.total-l.paid).toFixed(1)} ج</div>
+                <div style="font-weight:bold">الإجمالي: ${l.total.toFixed(2)} ج</div>
+                <div style="color:red">المتبقي: ${(l.total - l.paid).toFixed(2)} ج</div>
+                <input type="number" id="up-paid" placeholder="تحصيل مبلغ جديد" style="margin-top:10px">
+                <button class="btn btn-save" onclick="updatePaid(${id})">تحديث السداد</button>
+                <button class="btn btn-close" onclick="closeModal('inv-modal')">إغلاق</button>
             </div>
-            <button class="btn btn-save" onclick="window.print()">🖨️ طباعة / PDF</button>
-            <input type="number" id="up-amt" placeholder="تحصيل مبلغ" inputmode="decimal" style="margin-top:10px">
-            <button class="btn btn-main" onclick="updatePaid(${id})">تحديث السداد</button>
-            <button class="btn btn-close" onclick="closeModal('inv-modal')">إغلاق</button>
         `;
         openModal('inv-modal');
     }
 
     function updatePaid(id) {
-        const amt = parseFloat(document.getElementById('up-amt').value);
-        if(!amt) return;
+        const val = parseFloat(document.getElementById('up-paid').value) || 0;
         const l = app.logs.find(x=>x.id==id);
-        l.paid += amt;
-        l.history.unshift({ date: new Date().toLocaleString('ar-EG'), amt: amt });
-        saveData(); renderRecs(); openInv(id);
-    }
-
-    function addNewDrug() {
-        const n = document.getElementById('new-drug-name').value;
-        const p = parseFloat(document.getElementById('new-drug-price').value);
-        if(!n || !p) return;
-        app.drugs.push({id: Date.now(), name: n, price: p});
-        saveData(); loadSelects(); closeModal('settings-modal');
+        l.paid += val;
+        saveData(); closeModal('inv-modal'); renderRecs();
     }
 
     function doCalc() {
         const id = document.getElementById('c-drug').value;
         if(!id) return;
         const itm = app.drugs.find(x=>x.id==id);
-        const qty = parseFloat(document.getElementById('c-qty').value) || 1;
-        const disc = parseFloat(document.getElementById('c-disc').value) || 0;
-        const net = itm.price * (1 - (disc/100));
-        document.getElementById('c-res').innerText = (net * qty).toFixed(2) + ' ج';
-        document.getElementById('c-unit').innerText = `صافي الوحدة: ${net.toFixed(2)} ج`;
+        const q = parseFloat(document.getElementById('c-qty').value) || 1;
+        const d = parseFloat(document.getElementById('c-disc').value) || 0;
+        const net = itm.price * (1 - (d/100));
+        document.getElementById('c-res').innerText = (net * q).toFixed(2) + " ج";
+        document.getElementById('c-unit').innerText = `صافي العلبة: ${net.toFixed(2)} ج`;
     }
 
-    function exportData() {
-        const blob = new Blob([JSON.stringify(app)], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = 'ncure_backup.json'; a.click();
+    function addNewDrug() {
+        const name = document.getElementById('new-drug-name').value;
+        const price = parseFloat(document.getElementById('new-drug-price').value);
+        if(name && price) {
+            app.drugs.push({id: Date.now(), name, price});
+            saveData(); loadSelects(); closeModal('settings-modal');
+        }
     }
 
-    function importData(e) {
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-            try { app = JSON.parse(ev.target.result); saveData(); location.reload(); } catch(e) { alert('خطأ في الملف'); }
-        };
-        reader.readAsText(e.target.files[0]);
+    function checkPharmExists() {
+        const name = document.getElementById('p-pharm').value.trim();
+        const pharms = [...new Set(app.logs.map(l => l.pharm))];
+        if(pharms.includes(name)) {
+            const last = app.logs.find(l => l.pharm === name);
+            document.getElementById('p-doc').value = last.doc;
+        }
+    }
+
+    function updatePharmDatalist() {
+        const pharms = [...new Set(app.logs.map(l => l.pharm))];
+        document.getElementById('pharm-list').innerHTML = pharms.map(p => `<option value="${p}">`).join('');
     }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
     function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-    function clearData() { if(confirm('حذف كل البيانات؟')){ localStorage.clear(); location.reload(); } }
-    function tick() { document.getElementById('clock').innerText = new Date().toLocaleTimeString('ar-EG'); setTimeout(tick, 1000); }
-    init();
+    function tick() { document.getElementById('clock').innerText = new Date().toLocaleString('ar-EG'); setTimeout(tick, 1000); }
+
 </script>
 </body>
 </html>
