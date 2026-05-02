@@ -54,14 +54,17 @@
         .modal { background: white; width: 100%; border-radius: 12px; padding: 15px; max-height: 85vh; overflow-y: auto; }
 
         .table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr; padding: 5px; font-size: 0.75rem; border-bottom: 1px solid #eee; }
+        
+        /* ميز بصري لنوع الحساب */
+        .role-indicator { font-size: 0.6rem; background: #fff3cd; color: #856404; padding: 2px 5px; border-radius: 4px; margin-right: 5px; vertical-align: middle; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-card">
-        <img src="logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
-        <h2 style="color:var(--primary); margin-bottom:20px;">تسجيل الدخول</h2>
+        <img src="https://cdn-icons-png.flaticon.com/512/3003/3003234.png">
+        <h2 style="color:var(--primary); margin-bottom:20px;">N-CURE Pro</h2>
         <input type="text" id="login-user" placeholder="اسم المستخدم" style="margin-bottom:10px">
         <input type="password" id="login-pass" placeholder="كلمة المرور">
         <button class="btn btn-main" onclick="handleLogin()">دخول النظام</button>
@@ -72,11 +75,14 @@
 <div id="main-app">
     <div class="header">
         <div>
-            <h1 style="font-size:1.1rem" id="display-user-name">N-CURE Master</h1>
-            <small id="clock" style="font-size: 0.6rem; opacity:0.8"></small>
+            <span id="role-label" class="role-indicator"></span>
+            <span style="font-size:1.1rem" id="display-user-name"></span>
+            <br><small id="clock" style="font-size: 0.6rem; opacity:0.8"></small>
         </div>
-        <button class="btn" style="width:auto; padding:5px 10px; background:rgba(255,255,255,0.2); color:white" onclick="location.reload()">خروج</button>
-        <button onclick="openModal('settings-modal')" style="background:none; border:none; color:white; font-size:1.2rem">⚙️</button>
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button onclick="openModal('settings-modal')" id="master-gear" style="background:none; border:none; color:white; font-size:1.2rem; display:none;">⚙️</button>
+            <button class="btn" style="width:auto; padding:5px 10px; background:rgba(255,255,255,0.2); color:white; margin:0" onclick="location.reload()">خروج</button>
+        </div>
     </div>
 
     <div class="tabs">
@@ -122,7 +128,7 @@
                 <button class="filter-btn" id="f-unpaid" onclick="filterRecs('unpaid')">غير مسدد</button>
                 <button class="filter-btn" id="f-partial" onclick="filterRecs('partial')">جزئي</button>
                 <button class="filter-btn" id="f-paid" onclick="filterRecs('paid')">تم السداد</button>
-                <button class="filter-btn" id="f-stats" onclick="filterRecs('stats')">📊 إحصائيات</button>
+                <button class="filter-btn" id="f-stats" onclick="filterRecs('stats')" style="display:none;">📊 إحصائيات</button>
             </div>
             <div id="rec-list"></div>
         </div>
@@ -144,13 +150,13 @@
 
 <div class="modal-overlay" id="settings-modal">
     <div class="modal">
-        <div class="card-title">إدارة البيانات والإكسيل</div>
-        <button class="btn btn-excel" onclick="exportToExcel()">📥 تصدير كل الفواتير (Excel)</button>
+        <div class="card-title">إدارة النظام (Master Only)</div>
+        <button class="btn btn-excel" onclick="exportToExcel()">📥 تصدير تقرير الإكسيل الشامل</button>
         <hr style="margin:15px 0">
-        <label>إضافة دواء للمخزن</label>
-        <input type="text" id="new-drug-name" placeholder="الاسم">
+        <label>إضافة دواء جديد للمخزن</label>
+        <input type="text" id="new-drug-name" placeholder="اسم الدواء">
         <input type="number" id="new-drug-price" placeholder="السعر الرسمي">
-        <button class="btn btn-save" onclick="addNewDrug()">حفظ الصنف</button>
+        <button class="btn btn-save" onclick="addNewDrug()">حفظ في قاعدة البيانات</button>
         <button class="btn btn-close" onclick="closeModal('settings-modal')">إغلاق</button>
     </div>
 </div>
@@ -158,21 +164,21 @@
 <div class="modal-overlay" id="inv-modal"><div class="modal" id="inv-details-content"></div></div>
 
 <script>
+    // --- إعدادات المستخدمين ---
+    const usersList = [
+        { u: "admin", p: "123", name: "Jan Master", role: "master" },
+        { u: "user1", p: "456", name: "المندوب أحمد", role: "user" },
+        { u: "user2", p: "789", name: "المندوب سارة", role: "user" }
+    ];
+
     let app = { 
         drugs: [{id:1, name:'Vitamin D-400', price:50}, {id:2, name:'Probiotic', price:125}], 
         logs: [], 
         next: 101,
-        loggedUser: ''
+        loggedUser: null
     };
     let tempCart = [];
     let currentFilter = 'all';
-
-    // بيانات المستخدمين (يمكنك إضافة المزيد هنا)
-    const usersList = [
-        { u: "admin", p: "123", name: "Jan Master" },
-        { u: "n-cure1", p: "456", name: "محروس" },
-        { u: "n-cure2", p: "789", name: "أحمد" }
-    ];
 
     function handleLogin() {
         const u = document.getElementById('login-user').value.toLowerCase();
@@ -180,29 +186,36 @@
         const user = usersList.find(x => x.u === u && x.p === p);
 
         if(user) {
-            app.loggedUser = user.name;
+            app.loggedUser = user;
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
             document.getElementById('display-user-name').innerText = user.name;
+            document.getElementById('role-label').innerText = user.role === 'master' ? 'مدير' : 'مندوب';
+            
+            // إظهار مميزات الماستر
+            if(user.role === 'master') {
+                document.getElementById('master-gear').style.display = 'block';
+                document.getElementById('f-stats').style.display = 'block';
+            }
             init();
         } else {
-            document.getElementById('login-msg').innerText = "خطأ في اسم المستخدم أو كلمة المرور";
+            document.getElementById('login-msg').innerText = "بيانات الدخول غير صحيحة";
         }
     }
 
     function init() {
-        const d = localStorage.getItem('ncure_v20');
+        const d = localStorage.getItem('ncure_v25');
         if(d) {
             const saved = JSON.parse(d);
-            app.logs = saved.logs;
-            app.drugs = saved.drugs;
-            app.next = saved.next;
+            app.logs = saved.logs || [];
+            app.drugs = saved.drugs || app.drugs;
+            app.next = saved.next || 101;
         }
         document.getElementById('p-date').valueAsDate = new Date();
         loadSelects(); updatePharmDatalist(); tick();
     }
 
-    function saveData() { localStorage.setItem('ncure_v20', JSON.stringify(app)); updatePharmDatalist(); }
+    function saveData() { localStorage.setItem('ncure_v25', JSON.stringify(app)); updatePharmDatalist(); }
 
     function showScreen(idx) {
         document.querySelectorAll('.screen, .tab').forEach(el => el.classList.remove('active'));
@@ -223,7 +236,7 @@
         const itm = app.drugs.find(x=>x.id==id);
         const disc = parseFloat(document.getElementById('p-disc').value) || 0;
         const net = itm.price * (1 - (disc/100));
-        document.getElementById('pre-box').innerHTML = `السعر الصافي للعلبة: ${net.toFixed(2)} ج`;
+        document.getElementById('pre-box').innerHTML = `صافي العلبة: ${net.toFixed(2)} ج`;
         document.getElementById('pre-box').style.display = 'block';
     }
 
@@ -252,42 +265,44 @@
         
         app.logs.unshift({
             id: app.next++,
-            createdBy: app.loggedUser,
+            createdBy: app.loggedUser.name,
+            creatorUser: app.loggedUser.u,
             pharm: document.getElementById('p-pharm').value,
             doc: document.getElementById('p-doc').value,
             date: document.getElementById('p-date').value,
             items: [...tempCart],
             total: total,
-            paid: paid,
-            history: [{ date: new Date().toLocaleString('ar-EG'), amt: paid }]
+            paid: paid
         });
         
         saveData();
-        // تفريغ فوري
         tempCart = []; renderCart();
         document.getElementById('p-pharm').value = "صيدلية / ";
         document.getElementById('p-doc').value = "دكتور/ ";
         document.getElementById('p-paid').value = "";
-        alert("تم حفظ الفاتورة بنجاح");
+        alert("تم الحفظ بنجاح");
         showScreen(1);
     }
 
     function renderRecs() {
         if(currentFilter === 'stats') return renderStats();
-        let list = app.logs;
+        
+        // تصفية: إذا لم يكن ماستر، يرى فقط فواتيره
+        let list = (app.loggedUser.role === 'master') ? app.logs : app.logs.filter(l => l.creatorUser === app.loggedUser.u);
+
         if(currentFilter === 'unpaid') list = list.filter(l => l.paid === 0);
         if(currentFilter === 'partial') list = list.filter(l => l.paid > 0 && l.paid < l.total);
         if(currentFilter === 'paid') list = list.filter(l => l.paid >= l.total);
 
         document.getElementById('rec-list').innerHTML = list.map(l=>{
             const rem = l.total - l.paid;
-            const status = rem <= 0 ? {c:'var(--success)', t:'مسدد'} : (l.paid > 0 ? {c:'var(--partial)', t:'جزئي'} : {c:'var(--danger)', t:'غير مسدد'});
+            const statusColor = rem <= 0 ? 'var(--success)' : (l.paid > 0 ? 'var(--partial)' : 'var(--danger)');
             return `<div class="record-item" onclick="openInv(${l.id})">
-                <span class="user-badge">${l.createdBy}</span>
-                <div style="font-weight:bold; font-size:0.85rem; margin-top:12px">${l.pharm}</div>
-                <div style="font-size:0.7rem; color:#666">المتبقي: ${rem.toFixed(2)} ج | ${l.date}</div>
+                <span class="user-badge" style="background:#f0f0f0; color:#333">${l.createdBy}</span>
+                <div style="font-weight:bold; font-size:0.85rem; margin-top:12px; border-right:3px solid ${statusColor}; padding-right:8px">${l.pharm}</div>
+                <div style="font-size:0.7rem; color:#666; margin-top:4px">المتبقي: ${rem.toFixed(2)} ج | ${l.date}</div>
             </div>`;
-        }).join('');
+        }).join('') || '<p style="text-align:center; padding:20px; color:#999">لا توجد بيانات للعرض</p>';
     }
 
     function renderStats() {
@@ -298,33 +313,30 @@
                 <div style="font-size:0.8rem">إجمالي مبيعات الفريق</div>
                 <div style="font-size:1.5rem; font-weight:bold">${totalSales.toFixed(2)} ج</div>
             </div>
-            <div class="card">
-                <div style="font-size:0.8rem">إجمالي التحصيل</div>
+            <div class="card" style="background:white; border:1px solid var(--success)">
+                <div style="font-size:0.8rem">إجمالي التحصيل المالي</div>
                 <div style="font-size:1.5rem; font-weight:bold; color:var(--success)">${totalPaid.toFixed(2)} ج</div>
             </div>
         `;
     }
 
     function exportToExcel() {
-        if(app.logs.length === 0) return alert("لا توجد فواتير لتصديرها");
-        
-        // تجهيز البيانات للاكسيل
+        if(app.logs.length === 0) return alert("لا توجد بيانات للتصدير");
         const data = app.logs.map(l => ({
             "رقم الفاتورة": l.id,
             "المندوب": l.createdBy,
             "اسم الصيدلية": l.pharm,
             "الدكتور": l.doc,
             "التاريخ": l.date,
-            "إجمالي الفاتورة": l.total,
-            "المبلغ المحصل": l.paid,
+            "الإجمالي": l.total,
+            "المدفوع": l.paid,
             "المتبقي": (l.total - l.paid).toFixed(2),
-            "الأصناف": l.items.map(i => `${i.name}(${i.qty})`).join(' - ')
+            "التفاصيل": l.items.map(i => `${i.name}(${i.qty})`).join(' | ')
         }));
-
         const ws = XLSX.utils.json_to_sheet(data);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Foutayer");
-        XLSX.writeFile(wb, `N-CURE_Report_${new Date().toLocaleDateString()}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "Foutayer_Report");
+        XLSX.writeFile(wb, `NCURE_Team_Report.xlsx`);
     }
 
     function filterRecs(f) {
@@ -337,17 +349,15 @@
         const l = app.logs.find(x=>x.id==id);
         document.getElementById('inv-details-content').innerHTML = `
             <div style="text-align:right">
-                <h3 style="color:var(--primary); text-align:center">تفاصيل الفاتورة #${l.id}</h3>
-                <p style="font-size:0.8rem">بواسطة: ${l.createdBy}</p>
-                <hr style="margin:10px 0">
-                <p><b>الصيدلية:</b> ${l.pharm}</p>
-                <p><b>المستلم:</b> ${l.doc}</p>
-                <div style="margin:10px 0; background:#f9f9f9; padding:5px">
-                    ${l.items.map(i=>`<div>${i.name} (x${i.qty}) = ${i.sub.toFixed(2)} ج</div>`).join('')}
+                <h3 style="color:var(--primary); text-align:center">فاتورة #${l.id}</h3>
+                <p style="font-size:0.7rem; border-bottom:1px solid #eee; padding-bottom:5px">تم الإنشاء بواسطة: ${l.createdBy}</p>
+                <p style="margin-top:10px"><b>الصيدلية:</b> ${l.pharm}</p>
+                <div style="margin:10px 0; background:#f9f9f9; padding:8px; border-radius:5px; font-size:0.8rem">
+                    ${l.items.map(i=>`<div>- ${i.name} (${i.qty} علبة) = ${i.sub.toFixed(2)} ج</div>`).join('')}
                 </div>
                 <div style="font-weight:bold">الإجمالي: ${l.total.toFixed(2)} ج</div>
                 <div style="color:red">المتبقي: ${(l.total - l.paid).toFixed(2)} ج</div>
-                <input type="number" id="up-paid" placeholder="تحصيل مبلغ جديد" style="margin-top:10px">
+                <input type="number" id="up-paid" placeholder="إضافة مبلغ سداد.." style="margin-top:10px">
                 <button class="btn btn-save" onclick="updatePaid(${id})">تحديث السداد</button>
                 <button class="btn btn-close" onclick="closeModal('inv-modal')">إغلاق</button>
             </div>
@@ -370,7 +380,7 @@
         const d = parseFloat(document.getElementById('c-disc').value) || 0;
         const net = itm.price * (1 - (d/100));
         document.getElementById('c-res').innerText = (net * q).toFixed(2) + " ج";
-        document.getElementById('c-unit').innerText = `صافي العلبة: ${net.toFixed(2)} ج`;
+        document.getElementById('c-unit').innerText = `صافي القطعة: ${net.toFixed(2)} ج`;
     }
 
     function addNewDrug() {
@@ -379,16 +389,14 @@
         if(name && price) {
             app.drugs.push({id: Date.now(), name, price});
             saveData(); loadSelects(); closeModal('settings-modal');
+            alert("تمت الإضافة للمخزن بنجاح");
         }
     }
 
     function checkPharmExists() {
         const name = document.getElementById('p-pharm').value.trim();
-        const pharms = [...new Set(app.logs.map(l => l.pharm))];
-        if(pharms.includes(name)) {
-            const last = app.logs.find(l => l.pharm === name);
-            document.getElementById('p-doc').value = last.doc;
-        }
+        const last = app.logs.find(l => l.pharm === name);
+        if(last) document.getElementById('p-doc').value = last.doc;
     }
 
     function updatePharmDatalist() {
