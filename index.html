@@ -7,23 +7,21 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#1a6b3c">
-    <title>N-CURE Pro</title>
+    <title>N-CURE Professional</title>
 
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22N-CURE%22%2C%22short_name%22%3A%22N-CURE%22%2C%22start_url%22%3A%22index.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a6b3c%22%2C%22theme_color%22%3A%22%231a6b3c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22logo.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
     <style>
-        :root { --primary: #1a6b3c; --primary-dark: #0f4024; --bg: #f2f2f2; }
+        :root { --primary: #1a6b3c; --primary-dark: #0f4024; --bg: #f2f2f2; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #333; line-height: 1.3; }
 
-        /* الهيدر وزر الإعدادات */
         .header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
         .header h1 { font-size: 1rem; }
         .settings-btn { background: none; border: none; font-size: 1.3rem; color: white; cursor: pointer; }
 
-        /* التبويبات */
         .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; }
         .tab { flex: 1; padding: 10px; border: none; background: none; font-weight: bold; color: #666; font-size: 0.85rem; }
         .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: #f9f9f9; }
@@ -32,28 +30,39 @@
         .screen { display: none; }
         .screen.active { display: block; }
 
-        /* الكروت */
         .card { background: white; border-radius: 8px; padding: 10px; margin-bottom: 8px; border: 1px solid #e0e0e0; }
         .card-title { font-size: 0.8rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; border-right: 3px solid var(--primary); padding-right: 6px; }
 
         label { font-size: 0.7rem; font-weight: bold; display: block; margin-top: 4px; color: #555; }
         input, select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.9rem; margin-top: 2px; }
-        .btn { padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 8px; font-size: 0.9rem; }
+        
+        .btn { padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 8px; font-size: 0.9rem; transition: 0.2s; }
         .btn-main { background: var(--primary); color: white; }
-        .btn-save { background: #10b981; color: white; }
+        .btn-save { background: var(--success); color: white; }
         .btn-close { background: #eee; color: #333; }
+        .btn-outline { background: white; border: 1px solid var(--primary); color: var(--primary); }
 
-        /* الجدول المفصل */
+        /* الفلاتر */
+        .filters { display: flex; gap: 4px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-btn { padding: 6px 10px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 0.7rem; white-space: nowrap; cursor: pointer; }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* الجداول */
         .table-header { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; background: #eee; padding: 5px; font-size: 0.7rem; font-weight: bold; margin-top: 10px; }
         .table-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; padding: 5px; font-size: 0.75rem; border-bottom: 1px solid #f0f0f0; align-items: center; }
         .total-box { text-align: center; padding: 10px; font-weight: bold; color: var(--primary); font-size: 1.1rem; }
 
-        /* مودال مستقل */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
-        .modal { background: white; width: 100%; border-radius: 12px; padding: 15px; max-height: 80vh; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .modal { background: white; width: 100%; border-radius: 12px; padding: 15px; max-height: 85vh; overflow-y: auto; }
 
-        .record-item { background: white; padding: 10px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; }
-        .history-line { font-size: 0.7rem; color: #666; border-bottom: 1px dashed #eee; padding: 3px 0; display: flex; justify-content: space-between; }
+        .record-item { background: white; padding: 10px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; position: relative; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 5px; }
+        
+        @media print {
+            .header, .tabs, .filters, .btn, input, select { display: none !important; }
+            .modal-overlay { position: static; background: white; display: block; }
+            .modal { box-shadow: none; max-height: none; width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -98,13 +107,19 @@
             <div class="table-header"><span>الصنف</span><span>سعر</span><span>كمية</span><span>صافي</span></div>
             <div id="cart-list"></div>
             <div class="total-box">المجموع: <span id="cart-total">0</span> ج</div>
-            <label>المبلغ المدفوع</label>
+            <label>المبلغ المدفوع الآن</label>
             <input type="number" id="p-paid" placeholder="0.00" inputmode="decimal">
             <button class="btn btn-save" onclick="saveInv()">💾 حفظ الفاتورة نهائياً</button>
         </div>
     </div>
 
     <div class="screen" id="s1">
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterRecs('all')">الكل (<span id="count-all">0</span>)</button>
+            <button class="filter-btn" onclick="filterRecs('unpaid')">غير مسدد (<span id="count-unpaid">0</span>)</button>
+            <button class="filter-btn" onclick="filterRecs('partial')">جزئي (<span id="count-partial">0</span>)</button>
+            <button class="filter-btn" onclick="filterRecs('paid')">مسدد (<span id="count-paid">0</span>)</button>
+        </div>
         <div id="rec-list"></div>
     </div>
 
@@ -121,8 +136,15 @@
 
 <div class="modal-overlay" id="settings-modal">
     <div class="modal">
-        <div class="card-title">⚙️ الإعدادات العامة</div>
-        <button class="btn btn-close" onclick="exportData()" style="margin-bottom:8px">📥 تصدير البيانات</button>
+        <div class="card-title">⚙️ الإعدادات وإضافة منتجات</div>
+        <div style="background:#f9f9f9; padding:10px; border-radius:8px; margin-bottom:15px">
+            <label>اسم المنتج الجديد</label>
+            <input type="text" id="new-drug-name" placeholder="مثلاً: Vitamin C">
+            <label>سعر الجمهور (قبل الخصم)</label>
+            <input type="number" id="new-drug-price" inputmode="decimal" placeholder="0.00">
+            <button class="btn btn-save" onclick="addNewDrug()">➕ إضافة المنتج للقائمة</button>
+        </div>
+        <button class="btn btn-outline" onclick="exportData()">📥 تصدير البيانات</button>
         <button class="btn" style="background:#fee2e2; color:red" onclick="clearData()">🗑️ مسح جميع السجلات</button>
         <button class="btn btn-main" onclick="closeModal('settings-modal')" style="margin-top:15px">إغلاق</button>
     </div>
@@ -133,17 +155,22 @@
 </div>
 
 <script>
-    let app = { drugs: [{id:1, name:'Vitamin D-400', price:50}, {id:2, name:'Probiotic', price:125}], logs: [], next: 101 };
+    let app = { 
+        drugs: [{id:1, name:'Vitamin D-400', price:50}, {id:2, name:'Probiotic', price:125}], 
+        logs: [], 
+        next: 101 
+    };
     let tempCart = [];
+    let currentFilter = 'all';
 
     function init() {
-        const d = localStorage.getItem('ncure_final_v5');
+        const d = localStorage.getItem('ncure_v6');
         if(d) app = JSON.parse(d);
         document.getElementById('p-date').valueAsDate = new Date();
-        loadSelects(); renderRecs(); tick();
+        loadSelects(); updateCounts(); renderRecs(); tick();
     }
 
-    function save() { localStorage.setItem('ncure_final_v5', JSON.stringify(app)); }
+    function save() { localStorage.setItem('ncure_v6', JSON.stringify(app)); }
 
     function showScreen(i) {
         document.querySelectorAll('.screen, .tab').forEach((el, idx) => {
@@ -158,6 +185,17 @@
         document.getElementById('c-drug').innerHTML = opt;
     }
 
+    function addNewDrug() {
+        const name = document.getElementById('new-drug-name').value;
+        const price = parseFloat(document.getElementById('new-drug-price').value);
+        if(!name || !price) return alert('أدخل بيانات المنتج');
+        app.drugs.push({ id: Date.now(), name, price });
+        save(); loadSelects();
+        document.getElementById('new-drug-name').value = '';
+        document.getElementById('new-drug-price').value = '';
+        alert('تمت إضافة المنتج بنجاح');
+    }
+
     function updatePre() {
         const id = document.getElementById('p-drug').value;
         if(!id) return;
@@ -169,7 +207,7 @@
 
     function addItem() {
         const id = document.getElementById('p-drug').value;
-        if(!id) return alert('اختر صنف');
+        if(!id) return;
         const itm = app.drugs.find(x=>x.id==id);
         const net = itm.price * (1 - (document.getElementById('p-disc').value/100));
         const q = document.getElementById('p-qty').value;
@@ -178,11 +216,8 @@
     }
 
     function renderCart() {
-        const c = document.getElementById('cart-card');
-        c.style.display = tempCart.length ? 'block' : 'none';
-        document.getElementById('cart-list').innerHTML = tempCart.map(i=>`
-            <div class="table-row"><span>${i.name}</span><span>${i.price.toFixed(1)}</span><span>${i.qty}</span><span>${i.sub.toFixed(1)}</span></div>
-        `).join('');
+        document.getElementById('cart-card').style.display = tempCart.length ? 'block' : 'none';
+        document.getElementById('cart-list').innerHTML = tempCart.map(i=>`<div class="table-row"><span>${i.name}</span><span>${i.price.toFixed(1)}</span><span>${i.qty}</span><span>${i.sub.toFixed(1)}</span></div>`).join('');
         document.getElementById('cart-total').innerText = tempCart.reduce((a,b)=>a+b.sub, 0).toFixed(2);
     }
 
@@ -200,33 +235,66 @@
         });
         save(); tempCart = []; renderCart(); 
         document.getElementById('p-paid').value = '';
-        showScreen(1);
+        updateCounts(); showScreen(1);
+    }
+
+    function filterRecs(f) {
+        currentFilter = f;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.innerHTML.includes(f === 'all' ? 'الكل' : f === 'unpaid' ? 'غير مسدد' : f === 'partial' ? 'جزئي' : 'مسدد')));
+        renderRecs();
+    }
+
+    function updateCounts() {
+        document.getElementById('count-all').innerText = app.logs.length;
+        document.getElementById('count-unpaid').innerText = app.logs.filter(l => l.paid <= 0).length;
+        document.getElementById('count-partial').innerText = app.logs.filter(l => l.paid > 0 && l.paid < l.total).length;
+        document.getElementById('count-paid').innerText = app.logs.filter(l => l.paid >= l.total).length;
     }
 
     function renderRecs() {
-        document.getElementById('rec-list').innerHTML = app.logs.map(l=>`
-            <div class="record-item" onclick="openInv(${l.id})">
-                <div style="font-weight:bold; font-size:0.85rem">${l.pharm}</div>
-                <div style="font-size:0.7rem; color:#666">${l.doc} | ${l.date}</div>
-                <div style="font-weight:bold; color:${(l.total-l.paid)>0?'red':'green'}; font-size:0.8rem">المتبقي: ${(l.total-l.paid).toFixed(1)} ج</div>
-            </div>
-        `).join('');
+        let list = app.logs;
+        if(currentFilter === 'unpaid') list = list.filter(l => l.paid <= 0);
+        if(currentFilter === 'partial') list = list.filter(l => l.paid > 0 && l.paid < l.total);
+        if(currentFilter === 'paid') list = list.filter(l => l.paid >= l.total);
+
+        document.getElementById('rec-list').innerHTML = list.map(l=>{
+            const rem = l.total - l.paid;
+            let color = rem <= 0 ? 'var(--success)' : (l.paid > 0 ? 'var(--warning)' : 'var(--danger)');
+            return `
+                <div class="record-item" onclick="openInv(${l.id})">
+                    <div style="font-weight:bold; font-size:0.85rem"><span class="status-dot" style="background:${color}"></span>${l.pharm}</div>
+                    <div style="font-size:0.7rem; color:#666">${l.doc} | ${l.date}</div>
+                    <div style="font-weight:bold; color:${color}; font-size:0.8rem">المتبقي: ${rem.toFixed(1)} ج</div>
+                </div>
+            `;
+        }).join('');
     }
 
     function openInv(id) {
         const l = app.logs.find(x=>x.id==id);
         document.getElementById('inv-details-content').innerHTML = `
-            <div class="card-title">${l.pharm}</div>
-            <p style="font-size:0.75rem">${l.doc} - ${l.date}</p>
-            <div class="table-header"><span>الصنف</span><span>سعر</span><span>كمية</span><span>صافي</span></div>
-            ${l.items.map(i=>`<div class="table-row"><span>${i.name}</span><span>${i.price.toFixed(1)}</span><span>${i.qty}</span><span>${i.sub.toFixed(1)}</span></div>`).join('')}
-            <div class="total-box">الإجمالي: ${l.total.toFixed(2)} ج</div>
-            <div style="background:#f9f9f9; padding:8px; border-radius:8px">
-                <p style="font-size:0.7rem"><b>سجل التحصيل:</b></p>
-                ${l.history.map(h=>`<div class="history-line"><span>${h.date}</span><b>${h.amt} ج</b></div>`).join('')}
+            <div id="printable-area">
+                <div style="text-align:center; margin-bottom:10px; border-bottom:2px solid var(--primary); padding-bottom:5px">
+                    <h2 style="color:var(--primary)">N-CURE Professional</h2>
+                    <p style="font-size:0.8rem">فاتورة بيع رقم #${l.id}</p>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:10px">
+                    <span><b>العميل:</b> ${l.pharm}</span>
+                    <span><b>التاريخ:</b> ${l.date}</span>
+                </div>
+                <p style="font-size:0.75rem"><b>المستلم:</b> ${l.doc}</p>
+                <div class="table-header"><span>الصنف</span><span>سعر</span><span>كمية</span><span>صافي</span></div>
+                ${l.items.map(i=>`<div class="table-row"><span>${i.name}</span><span>${i.price.toFixed(1)}</span><span>${i.qty}</span><span>${i.sub.toFixed(1)}</span></div>`).join('')}
+                <div class="total-box">إجمالي الفاتورة: ${l.total.toFixed(2)} ج</div>
+                <div style="background:#f9f9f9; padding:8px; border-radius:8px; margin-top:10px">
+                    <p style="font-size:0.7rem"><b>سجل التحصيلات:</b></p>
+                    ${l.history.map(h=>`<div class="history-line"><span>${h.date}</span><b>${h.amt} ج</b></div>`).join('')}
+                </div>
+                <div style="text-align:left; margin-top:10px; font-weight:bold; color:var(--danger)">المتبقي للسداد: ${(l.total - l.paid).toFixed(2)} ج</div>
             </div>
-            <input type="number" id="up-amt" placeholder="مبلغ جديد" inputmode="decimal" style="margin-top:8px">
-            <button class="btn btn-save" onclick="updatePaid(${id})">تحديث السجل</button>
+            <button class="btn btn-save" onclick="window.print()">🖨️ طباعة / حفظ PDF</button>
+            <input type="number" id="up-amt" placeholder="تحصيل جديد" inputmode="decimal" style="margin-top:10px">
+            <button class="btn btn-main" onclick="updatePaid(${id})">تحديث السداد</button>
             <button class="btn btn-close" onclick="closeModal('inv-modal')">إغلاق</button>
         `;
         openModal('inv-modal');
@@ -238,7 +306,7 @@
         const l = app.logs.find(x=>x.id==id);
         l.paid += amt;
         l.history.unshift({ date: new Date().toLocaleString('ar-EG'), amt: amt });
-        save(); renderRecs(); openInv(id);
+        save(); updateCounts(); renderRecs(); openInv(id);
     }
 
     function openModal(id) { document.getElementById(id).style.display = 'flex'; }
