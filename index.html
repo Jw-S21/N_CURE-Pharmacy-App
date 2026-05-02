@@ -3,498 +3,399 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#1a6b3c">
-    <title>N-CURE Pro System</title>
-
+    <title>N-CURE Professional</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
-        :root { --primary: #1a6b3c; --bg: #f2f2f2; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --white: #ffffff; }
+        :root { --primary: #1a6b3c; --bg: #f2f2f2; --success: #10b981; --danger: #ef4444; --white: #ffffff; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: #333; overflow-x: hidden; padding-bottom: 20px; }
+        body { background: var(--bg); color: #333; }
 
         /* شاشة تسجيل الدخول */
-        #login-screen { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
-        .login-card { background: white; width: 100%; max-width: 350px; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
-        
-        /* الواجهة الأساسية */
+        #login-screen { position: fixed; inset: 0; background: var(--primary); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .login-card { background: white; width: 90%; max-width: 380px; padding: 35px; border-radius: 20px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .login-card img { width: 80px; margin-bottom: 15px; }
+        .login-card h2 { color: var(--primary); margin-bottom: 25px; font-size: 1.5rem; }
+
+        /* الواجهة الرئيسية */
         #main-app { display: none; }
-        .header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 99; }
-        .logo-area { display: flex; align-items: center; gap: 10px; }
-        .logo-area img { height: 35px; border-radius: 4px; }
+        .header { background: var(--primary); color: white; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        
+        .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; position: sticky; top: 54px; z-index: 99; }
+        .tab { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #666; cursor: pointer; transition: 0.3s; font-size: 0.9rem; }
+        .tab.active { color: var(--primary); border-bottom: 4px solid var(--primary); background: #f9f9f9; }
 
-        .tabs { display: flex; background: white; border-bottom: 1px solid #ddd; }
-        .tab { flex: 1; padding: 12px; border: none; background: none; font-weight: bold; color: #666; font-size: 0.8rem; cursor: pointer; text-align: center; }
-        .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: #f9f9f9; }
-
-        .content { padding: 8px; }
+        .content { padding: 10px; max-width: 600px; margin: auto; }
         .screen { display: none; }
         .screen.active { display: block; }
 
-        .card { background: white; border-radius: 8px; padding: 12px; margin-bottom: 8px; border: 1px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .card-title { font-size: 0.85rem; font-weight: bold; color: var(--primary); margin-bottom: 8px; border-right: 3px solid var(--primary); padding-right: 8px; }
+        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .card-title { font-size: 0.9rem; font-weight: bold; color: var(--primary); margin-bottom: 12px; border-right: 4px solid var(--primary); padding-right: 10px; display: flex; align-items: center; gap: 8px; }
 
-        label { font-size: 0.75rem; font-weight: bold; display: block; margin-top: 6px; color: #555; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.9rem; margin-top: 4px; }
-        
-        .btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 0.9rem; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        label { font-size: 0.8rem; font-weight: bold; display: block; margin-top: 10px; color: #444; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; margin-top: 5px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,107,60,0.1); }
+
+        .btn { padding: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; }
         .btn-main { background: var(--primary); color: white; }
-        .btn-save { background: var(--success); color: white; }
-        .btn-close { background: #eee; color: #333; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn:active { transform: scale(0.98); }
 
-        /* التنبيهات الاحترافية */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; }
-        .custom-alert { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 12px; z-index: 1001; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .inv-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .inv-table th { background: #f8f8f8; padding: 10px; border-bottom: 2px solid #eee; color: #666; }
+        .inv-table td { padding: 12px 8px; border-bottom: 1px solid #eee; text-align: center; }
 
-        /* الفواتير والمخزن */
-        .record-item { background: white; padding: 12px; border-radius: 8px; margin-bottom: 6px; border: 1px solid #ddd; position: relative; }
-        .user-badge { position: absolute; left: 10px; top: 10px; font-size: 0.65rem; background: #e8f5e9; color: var(--primary); padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-        
-        .inv-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.75rem; }
-        .inv-table th, .inv-table td { border: 1px solid #eee; padding: 6px; text-align: center; }
-        .inv-table th { background: #f8f8f8; color: var(--primary); }
+        /* التنبيهات والمودال */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 1000; backdrop-filter: blur(3px); }
+        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 20px; z-index: 1001; width: 95%; max-width: 450px; box-shadow: 0 20px 50px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
 
-        /* فلاتر الماستر */
-        .filters { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding: 4px 0; }
-        .filter-btn { padding: 8px 16px; border-radius: 20px; border: 1px solid #ddd; background: white; font-size: 0.75rem; white-space: nowrap; cursor: pointer; font-weight: bold; }
-        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .badge-user { font-size: 0.7rem; background: #e8f5e9; color: var(--primary); padding: 3px 8px; border-radius: 5px; }
+        .record-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
 
-        /* وضع الطباعة */
-        @media print {
-            body * { visibility: hidden; }
-            #invoice-modal, #invoice-modal * { visibility: visible; }
-            #invoice-modal { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; }
-            .no-print { display: none !important; }
-        }
+        @media print { .no-print { display: none !important; } .modal { position: static; transform: none; width: 100%; box-shadow: none; } }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-card">
-        <img src="logo.png" style="width: 70px; margin-bottom: 10px;" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
-        <h2 style="color:var(--primary); margin-bottom:20px;">دخول النظام</h2>
-        <input type="text" id="login-user" placeholder="اسم المستخدم">
+        <img src="https://cdn-icons-png.flaticon.com/512/3003/3003234.png" alt="Logo">
+        <h2>دخول النظام</h2>
+        <input type="text" id="login-user" placeholder="اسم المستخدم" spellcheck="false">
         <input type="password" id="login-pass" placeholder="كلمة المرور">
         <button class="btn btn-main" onclick="handleLogin()">دخول <i class="fas fa-sign-in-alt"></i></button>
-        <p id="login-msg" style="color:red; font-size:0.7rem; margin-top:10px"></p>
+        <p id="login-msg" style="color:var(--danger); font-size:0.8rem; margin-top:15px; font-weight:bold;"></p>
     </div>
 </div>
 
 <div id="main-app">
     <div class="header">
-        <div class="logo-area">
-            <img src="logo.png" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
+        <div style="display:flex; align-items:center; gap:10px">
+            <i class="fas fa-cog" style="font-size: 1.2rem; opacity: 0.8;"></i>
             <div>
                 <div style="font-size:0.9rem; font-weight:bold" id="display-user-name"></div>
-                <small id="clock" style="font-size: 0.6rem; opacity:0.8"></small>
+                <small id="clock" style="font-size: 0.7rem; opacity:0.8"></small>
             </div>
         </div>
-        <button class="btn" style="width:auto; padding:5px 10px; background:rgba(255,255,255,0.2); color:white; margin:0" onclick="location.reload()">خروج</button>
+        <button class="btn" style="width:auto; padding:5px 12px; background:rgba(255,255,255,0.2); color:white; margin:0" onclick="location.reload()">خروج</button>
     </div>
 
     <div class="tabs">
-        <button class="tab active" id="tab0" onclick="showScreen(0)"><i class="fas fa-file-invoice"></i> فاتورة</button>
-        <button class="tab" id="tab1" onclick="showScreen(1)"><i class="fas fa-history"></i> السجل</button>
-        <button class="tab" id="tab2" onclick="showScreen(2)"><i class="fas fa-warehouse"></i> المخزن</button>
-        <button class="tab" id="tab3" onclick="showScreen(3)"><i class="fas fa-calculator"></i> حاسبة</button>
+        <button class="tab active" id="tab0" onclick="showScreen(0)"><i class="fas fa-plus-circle"></i> فاتورة</button>
+        <button class="tab" id="tab1" onclick="showScreen(1)"><i class="fas fa-box"></i> الفواتير</button>
+        <button class="tab" id="tab2" onclick="showScreen(2)"><i class="fas fa-calculator"></i> حاسبة</button>
     </div>
 
     <div class="content">
         <div class="screen active" id="s0">
             <div class="card">
-                <div class="card-title">بيانات الفاتورة</div>
+                <div class="card-title"><i class="fas fa-user"></i> بيانات العميل</div>
                 <label>اسم الصيدلية</label>
-                <input type="text" id="p-pharm" list="pharm-list" placeholder="صيدلية / ">
-                <datalist id="pharm-list"></datalist>
+                <input type="text" id="p-pharm" placeholder="صيدلية / ">
                 <label>المستلم (دكتور)</label>
                 <input type="text" id="p-doc" placeholder="دكتور/ ">
                 <label>التاريخ</label>
                 <input type="date" id="p-date">
             </div>
+
             <div class="card">
-                <div class="card-title">إضافة صنف</div>
-                <select id="p-drug" onchange="updatePre()"></select>
-                <div style="display:flex; gap:8px">
-                    <div style="flex:1"><label>خصم %</label><input type="number" id="p-disc" value="25"></div>
-                    <div style="flex:1"><label>الكمية</label><input type="number" id="p-qty" value="1"></div>
+                <div class="card-title"><i class="fas fa-pills"></i> إضافة أصناف</div>
+                <select id="p-drug" onchange="calcPreview()"></select>
+                <div style="display:flex; gap:10px">
+                    <div style="flex:1"><label>الكمية</label><input type="number" id="p-qty" value="1" oninput="calcPreview()"></div>
+                    <div style="flex:1"><label>الخصم %</label><input type="number" id="p-disc" value="25" oninput="calcPreview()"></div>
                 </div>
-                <div id="pre-box" style="display:none; text-align:center; font-size:0.8rem; color:var(--primary); margin-top:8px; font-weight:bold;"></div>
-                <button class="btn btn-main" onclick="addItem()">إضافة <i class="fas fa-plus"></i></button>
+                <div id="preview-box" style="text-align:center; padding:10px; color:var(--primary); font-weight:bold; display:none;"></div>
+                <button class="btn btn-main" onclick="addToCart()">إضافة للفاتورة <i class="fas fa-plus"></i></button>
             </div>
-            <div id="cart-card" class="card" style="display:none">
-                <table class="inv-table" id="cart-table">
-                    <thead>
-                        <tr><th>الصنف</th><th>السعر</th><th>الصافي</th><th>كمية</th><th>إجمالي</th><th></th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <div style="text-align:center; padding:15px; font-weight:bold; color:var(--primary); font-size:1.1rem;">
-                    الإجمالي: <span id="cart-total">0.00</span> ج
+
+            <div id="cart-area" style="display:none">
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-list-ol"></i> جدول الفاتورة</div>
+                    <table class="inv-table" id="cart-table">
+                        <thead><tr><th>الصنف</th><th>سعر</th><th>كمية</th><th>صافي</th><th></th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <div style="text-align:center; padding:15px; font-weight:bold; color:var(--primary); font-size:1.2rem;">
+                        المجموع: <span id="cart-total">0.00</span> ج
+                    </div>
+                    <label>المبلغ المدفوع الآن</label>
+                    <input type="number" id="p-paid" value="0.00">
+                    <button class="btn btn-success" onclick="saveFinalInvoice()">حفظ الفاتورة نهائياً <i class="fas fa-save"></i></button>
                 </div>
-                <button class="btn btn-save" onclick="saveInv()">حفظ الفاتورة <i class="fas fa-save"></i></button>
             </div>
         </div>
 
         <div class="screen" id="s1">
-            <div id="master-filters" style="display:none">
-                <label style="margin-bottom:5px">عرض فواتير:</label>
-                <div class="filters" id="user-filter-list">
-                    <button class="filter-btn active" onclick="filterByUser('all')">الكل</button>
-                </div>
-            </div>
-            <div id="rec-list"></div>
-        </div>
-
-        <div class="screen" id="s2">
-            <div class="card">
-                <div class="card-title">الرصيد الحالي</div>
-                <div id="stock-list"></div>
-            </div>
-            <div class="card" id="admin-stock-add" style="display:none">
-                <div class="card-title">توريد كميات جديدة</div>
-                <select id="st-drug"></select>
-                <label>الكمية المستلمة</label>
-                <input type="number" id="st-qty" placeholder="0">
-                <button class="btn btn-main" onclick="addStock()">إضافة للمخزن <i class="fas fa-download"></i></button>
-            </div>
+            <div id="log-list"></div>
         </div>
 
         <div class="screen" id="s3">
             <div class="card">
-                <div class="card-title">حاسبة سريعة</div>
-                <select id="c-drug" onchange="doCalc()"></select>
+                <div class="card-title"><i class="fas fa-calculator"></i> حاسبة سريعة</div>
+                <select id="c-drug" onchange="quickCalc()"></select>
                 <label>الخصم %</label>
-                <input type="number" id="c-disc" value="25" oninput="doCalc()">
-                <div style="text-align:center; padding:20px;">
-                    <div style="font-size:0.8rem; color:#666">صافي العلبة الواحد:</div>
-                    <div id="c-unit" style="font-size:1.5rem; font-weight:bold; color:var(--primary)">0.00 ج</div>
-                </div>
+                <input type="number" id="c-disc" value="25" oninput="quickCalc()">
+                <div style="text-align:center; padding:25px; font-size:1.8rem; font-weight:bold; color:var(--primary)" id="c-res">0.00 ج</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="overlay" id="overlay" onclick="closeAllModals()"></div>
-
-<div class="custom-alert" id="custom-alert">
-    <div id="alert-icon" style="font-size: 40px; margin-bottom: 10px;"></div>
-    <p id="alert-msg" style="font-weight: bold;"></p>
-    <button class="btn btn-main" onclick="closeAllModals()">موافق</button>
-</div>
-
-<div class="custom-alert" id="invoice-modal" style="width:95%; max-width:500px; text-align:right;">
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid var(--primary); padding-bottom:10px; margin-bottom:15px;">
-        <div style="text-align:right">
-            <h2 style="color:var(--primary)">N-CURE</h2>
-            <small id="inv-view-id"></small>
-        </div>
-        <img src="logo.png" style="height:50px" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3003/3003234.png'">
+<div class="overlay" id="overlay" onclick="closeModal()"></div>
+<div class="modal" id="inv-modal">
+    <div style="text-align:center; border-bottom:2px solid var(--primary); padding-bottom:10px; margin-bottom:15px;">
+        <h2 style="color:var(--primary)">N-CURE</h2>
+        <p id="m-inv-id" style="font-weight:bold; font-size:0.9rem"></p>
     </div>
-    <div style="font-size:0.8rem; line-height:1.6; margin-bottom:15px;" id="inv-view-details"></div>
-    <table class="inv-table" id="inv-view-table">
-        <thead>
-            <tr><th>الصنف</th><th>السعر</th><th>الخصم</th><th>الصافي</th><th>الكمية</th><th>الإجمالي</th></tr>
-        </thead>
+    <div id="m-details" style="line-height:1.6; font-size:0.9rem; margin-bottom:15px;"></div>
+    
+    <table class="inv-table" id="m-table">
+        <thead><tr><th>الصنف</th><th>سعر</th><th>كمية</th><th>صافي</th></tr></thead>
         <tbody></tbody>
     </table>
-    <div style="text-align:left; font-weight:bold; font-size:1.1rem; margin-top:15px; padding-top:10px; border-top:1px solid #eee">
-        الإجمالي النهائي: <span id="inv-view-total"></span> ج
+
+    <div style="margin-top:15px; border-top:1px solid #eee; padding-top:10px">
+        <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.1rem; color:var(--primary)">
+            <span>الإجمالي:</span><span id="m-total">0</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--danger); margin-top:5px;">
+            <span>المتبقي:</span><span id="m-rem">0</span>
+        </div>
     </div>
-    <div class="no-print" style="display:flex; gap:10px; margin-top:20px">
-        <button class="btn btn-main" onclick="window.print()"><i class="fas fa-print"></i> طباعة / PDF</button>
-        <button class="btn btn-close" onclick="closeAllModals()">إغلاق</button>
+
+    <div class="no-print" style="margin-top:20px">
+        <label>إضافة مبلغ سداد (تحصيل)</label>
+        <input type="number" id="m-pay-input" placeholder="0.00">
+        <button class="btn btn-success" onclick="updatePayment()">تحديث السداد</button>
+        <div style="display:flex; gap:10px">
+            <button class="btn btn-main" onclick="window.print()"><i class="fas fa-print"></i> طباعة / PDF</button>
+            <button class="btn btn-danger" onclick="deleteInvoice()">حذف</button>
+        </div>
+        <button class="btn" style="background:#eee" onclick="closeModal()">إغلاق</button>
     </div>
 </div>
 
 <script>
-    // --- الإعدادات الأساسية ---
-    const adminEmail = "N.cure.aaj@Gmail.com";
-    
-    let app = { 
+    // الإعدادات الأساسية
+    let db = {
+        logs: [],
+        nextId: 101,
+        stock: {"Vitamin D-400": 100, "Probiotic": 100},
         drugs: [
-            {id:1, name:'Vitamin D-400', price:50}, 
-            {id:2, name:'Probiotic', price:125}
-        ], 
-        logs: [], 
-        stock: {"Vitamin D-400": 0, "Probiotic": 0},
-        next: 1001,
-        loggedUser: null
+            {id: 1, name: "Vitamin D-400", price: 50},
+            {id: 2, name: "Probiotic", price: 125}
+        ]
     };
 
-    const usersList = [
-        { u: "jan", p: "123", name: "Jan Waheed", role: "master" },
-        { u: "ncure1", p: "456", name: "مندوب 1", role: "user" }
+    const users = [
+        { u: "janwaheed", p: "2131992", name: "Dr. Jan Waheed", role: "master" },
+        { u: "aayad", p: "123456", name: "Dr. Ahmed Ayad", role: "user" }
     ];
 
-    let tempCart = [];
+    let currentUser = null;
+    let cart = [];
+    let activeInvId = null;
 
-    // --- وظائف تسجيل الدخول ---
+    // تشغيل النظام
+    window.onload = () => {
+        const saved = localStorage.getItem('ncure_pro_data');
+        if(saved) db = JSON.parse(saved);
+        loadSelects();
+        tick();
+    };
+
     function handleLogin() {
-        const u = document.getElementById('login-user').value.toLowerCase();
+        const u = document.getElementById('login-user').value.toLowerCase().trim();
         const p = document.getElementById('login-pass').value;
-        const user = usersList.find(x => x.u === u && x.p === p);
+        const user = users.find(x => x.u === u && x.p === p);
 
         if(user) {
-            app.loggedUser = user;
+            currentUser = user;
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
             document.getElementById('display-user-name').innerText = user.name;
-            
-            if(user.role === 'master') {
-                document.getElementById('master-filters').style.display = 'block';
-                document.getElementById('admin-stock-add').style.display = 'block';
-                loadUserFilters();
-            }
-            init();
+            document.getElementById('p-date').valueAsDate = new Date();
+            renderLogs();
         } else {
             document.getElementById('login-msg').innerText = "خطأ في اسم المستخدم أو كلمة المرور";
         }
     }
 
-    function init() {
-        const d = localStorage.getItem('ncure_pro_db');
-        if(d) {
-            const saved = JSON.parse(d);
-            app.logs = saved.logs || [];
-            app.stock = saved.stock || app.stock;
-            app.next = saved.next || 1001;
-        }
-        document.getElementById('p-date').valueAsDate = new Date();
-        loadSelects();
-        renderStock();
-        tick();
-    }
-
-    function saveData() { 
-        localStorage.setItem('ncure_pro_db', JSON.stringify(app)); 
-        updatePharmDatalist();
-    }
-
-    // --- وظائف الفاتورة ---
     function loadSelects() {
-        const opt = '<option value="">-- اختر الصنف --</option>' + app.drugs.map(x=>`<option value="${x.id}">${x.name} (${x.price}ج)</option>`).join('');
-        document.getElementById('p-drug').innerHTML = opt;
-        document.getElementById('st-drug').innerHTML = opt;
-        document.getElementById('c-drug').innerHTML = opt;
+        const options = '<option value="">-- اختر الصنف --</option>' + 
+            db.drugs.map(d => `<option value="${d.id}">${d.name} (${d.price}ج)</option>`).join('');
+        document.getElementById('p-drug').innerHTML = options;
+        document.getElementById('c-drug').innerHTML = options;
     }
 
-    function updatePre() {
-        const id = document.getElementById('p-drug').value;
-        if(!id) return;
-        const itm = app.drugs.find(x=>x.id==id);
+    function calcPreview() {
+        const drug = db.drugs.find(x => x.id == document.getElementById('p-drug').value);
+        if(!drug) return;
         const disc = parseFloat(document.getElementById('p-disc').value) || 0;
-        const net = itm.price * (1 - (disc/100));
-        document.getElementById('pre-box').innerHTML = `سعر الصنف صافي: ${net.toFixed(2)} ج`;
-        document.getElementById('pre-box').style.display = 'block';
+        const net = drug.price * (1 - disc/100);
+        document.getElementById('preview-box').style.display = 'block';
+        document.getElementById('preview-box').innerText = `صافي القطعة: ${net.toFixed(2)} ج`;
     }
 
-    function addItem() {
-        const id = document.getElementById('p-drug').value;
-        if(!id) return;
-        const itm = app.drugs.find(x=>x.id==id);
-        const q = parseInt(document.getElementById('p-qty').value) || 1;
-        const d = parseFloat(document.getElementById('p-disc').value) || 0;
-        
-        // التحقق من المخزن
-        if(app.stock[itm.name] < q) {
-            return showCustomAlert("المخزن لا يكفي! الرصيد المتاح: " + app.stock[itm.name], "warning");
-        }
+    function addToCart() {
+        const drug = db.drugs.find(x => x.id == document.getElementById('p-drug').value);
+        const qty = parseInt(document.getElementById('p-qty').value);
+        if(!drug || qty < 1) return alert("اختر الصنف والكمية");
 
-        const net = itm.price * (1 - (d/100));
-        tempCart.push({ 
-            name: itm.name, 
-            price: itm.price, 
-            disc: d, 
-            net: net, 
-            qty: q, 
-            sub: net * q 
+        const disc = parseFloat(document.getElementById('p-disc').value) || 0;
+        const net = drug.price * (1 - disc/100);
+        
+        cart.push({
+            name: drug.name,
+            price: drug.price,
+            qty: qty,
+            disc: disc,
+            net: net,
+            total: net * qty
         });
+
         renderCart();
     }
 
     function renderCart() {
-        const card = document.getElementById('cart-card');
-        card.style.display = tempCart.length ? 'block' : 'none';
-        const tbody = document.querySelector('#cart-table tbody');
-        tbody.innerHTML = tempCart.map((i, idx) => `
+        const body = document.querySelector('#cart-table tbody');
+        body.innerHTML = cart.map((item, index) => `
             <tr>
-                <td>${i.name}</td>
-                <td>${i.price}</td>
-                <td>${i.net.toFixed(2)}</td>
-                <td>${i.qty}</td>
-                <td>${i.sub.toFixed(2)}</td>
-                <td><i class="fas fa-trash" style="color:red" onclick="removeItem(${idx})"></i></td>
+                <td>${item.name}</td>
+                <td>${item.price}</td>
+                <td>${item.qty}</td>
+                <td>${item.total.toFixed(2)}</td>
+                <td><i class="fas fa-trash" style="color:var(--danger)" onclick="removeFromCart(${index})"></i></td>
             </tr>
         `).join('');
-        document.getElementById('cart-total').innerText = tempCart.reduce((a,b)=>a+b.sub, 0).toFixed(2);
+        
+        const total = cart.reduce((sum, item) => sum + item.total, 0);
+        document.getElementById('cart-total').innerText = total.toFixed(2);
+        document.getElementById('cart-area').style.display = cart.length ? 'block' : 'none';
     }
 
-    function removeItem(idx) {
-        tempCart.splice(idx, 1);
-        renderCart();
-    }
+    function removeFromCart(i) { cart.splice(i, 1); renderCart(); }
 
-    function saveInv() {
-        const pharm = document.getElementById('p-pharm').value;
-        const doc = document.getElementById('p-doc').value;
-        if(!pharm || tempCart.length === 0) return showCustomAlert("يرجى إكمال بيانات الفاتورة", "warning");
+    function saveFinalInvoice() {
+        const pharm = document.getElementById('p-pharm').value.trim();
+        if(!pharm || !cart.length) return alert("أكمل بيانات الصيدلية والأصناف");
 
-        const newInv = {
-            id: app.next++,
+        const total = cart.reduce((sum, item) => sum + item.total, 0);
+        const paid = parseFloat(document.getElementById('p-paid').value) || 0;
+
+        const inv = {
+            id: db.nextId++,
             pharm: pharm,
-            doc: doc,
+            doc: document.getElementById('p-doc').value,
             date: document.getElementById('p-date').value,
-            items: [...tempCart],
-            total: tempCart.reduce((a,b)=>a+b.sub, 0),
-            user: app.loggedUser.name,
-            u_id: app.loggedUser.u
+            items: [...cart],
+            total: total,
+            paid: paid,
+            user: currentUser.name,
+            userId: currentUser.u,
+            timestamp: new Date().toLocaleString()
         };
 
-        // خصم من المخزن
-        tempCart.forEach(item => {
-            app.stock[item.name] -= item.qty;
-        });
-
-        app.logs.unshift(newInv);
-        saveData();
-        tempCart = [];
+        db.logs.unshift(inv);
+        saveDB();
+        alert("تم الحفظ بنجاح");
+        cart = [];
+        document.getElementById('p-pharm').value = "";
+        document.getElementById('p-doc').value = "";
         renderCart();
-        renderStock();
-        showCustomAlert("تم حفظ الفاتورة وتحديث المخزن بنجاح ✅", "success");
+        renderLogs();
         showScreen(1);
     }
 
-    // --- عرض السجل ---
-    function renderRecs(filter = 'all') {
-        let list = app.logs;
-        if(app.loggedUser.role !== 'master') {
-            list = list.filter(l => l.u_id === app.loggedUser.u);
-        } else if(filter !== 'all') {
-            list = list.filter(l => l.u_id === filter);
+    function renderLogs() {
+        const container = document.getElementById('log-list');
+        let filtered = db.logs;
+        if(currentUser.role !== 'master') {
+            filtered = db.logs.filter(l => l.userId === currentUser.u);
         }
 
-        document.getElementById('rec-list').innerHTML = list.map(l => `
-            <div class="record-item" onclick="openInvoiceView(${l.id})">
-                <span class="user-badge">${l.user}</span>
-                <div style="font-weight:bold; margin-top:8px">${l.pharm}</div>
-                <div style="font-size:0.7rem; color:#666">الإجمالي: ${l.total.toFixed(2)} ج | ${l.date}</div>
+        container.innerHTML = filtered.map(l => `
+            <div class="record-item" onclick="openInvoice(${l.id})">
+                <div>
+                    <div style="font-weight:bold">${l.pharm} (#${l.id})</div>
+                    <small>${l.date} | المتبقي: ${(l.total - l.paid).toFixed(2)} ج</small>
+                </div>
+                <span class="badge-user">${l.user}</span>
             </div>
-        `).join('') || '<p style="text-align:center; padding:20px; color:#999">لا توجد فواتير</p>';
+        `).join('') || '<p style="text-align:center; padding:20px; color:#999">لا توجد سجلات</p>';
     }
 
-    function openInvoiceView(id) {
-        const l = app.logs.find(x => x.id == id);
-        document.getElementById('inv-view-id').innerText = `فاتورة رقم #${l.id}`;
-        document.getElementById('inv-view-details').innerHTML = `
-            <strong>اسم الصيدلية:</strong> ${l.pharm}<br>
-            <strong>المستلم (دكتور):</strong> ${l.doc || '---'}<br>
-            <strong>التاريخ:</strong> ${l.date}<br>
-            <strong>المندوب:</strong> ${l.user}
+    function openInvoice(id) {
+        activeInvId = id;
+        const inv = db.logs.find(x => x.id === id);
+        document.getElementById('m-inv-id').innerText = `فاتورة رقم #${inv.id}`;
+        document.getElementById('m-details').innerHTML = `
+            <b>الصيدلية:</b> ${inv.pharm}<br>
+            <b>المستلم:</b> ${inv.doc || '---'}<br>
+            <b>التاريخ:</b> ${inv.date}<br>
+            <b>بواسطة:</b> ${inv.user}
         `;
-        
-        const tbody = document.querySelector('#inv-view-table tbody');
-        tbody.innerHTML = l.items.map(i => `
-            <tr>
-                <td>${i.name}</td>
-                <td>${i.price}</td>
-                <td>${i.disc}%</td>
-                <td>${i.net.toFixed(2)}</td>
-                <td>${i.qty}</td>
-                <td>${i.sub.toFixed(2)}</td>
-            </tr>
+
+        document.querySelector('#m-table tbody').innerHTML = inv.items.map(i => `
+            <tr><td>${i.name}</td><td>${i.price}</td><td>${i.qty}</td><td>${i.total.toFixed(2)}</td></tr>
         `).join('');
 
-        document.getElementById('inv-view-total').innerText = l.total.toFixed(2);
+        document.getElementById('m-total').innerText = inv.total.toFixed(2) + " ج";
+        document.getElementById('m-rem').innerText = (inv.total - inv.paid).toFixed(2) + " ج";
         
         document.getElementById('overlay').style.display = 'block';
-        document.getElementById('invoice-modal').style.display = 'block';
+        document.getElementById('inv-modal').style.display = 'block';
     }
 
-    // --- المخزن والحاسبة ---
-    function renderStock() {
-        let html = '';
-        for(let name in app.stock) {
-            const color = app.stock[name] < 10 ? 'red' : 'var(--primary)';
-            html += `
-                <div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #eee">
-                    <span>${name}</span>
-                    <span style="font-weight:bold; color:${color}">${app.stock[name]} علبة</span>
-                </div>
-            `;
+    function updatePayment() {
+        const amt = parseFloat(document.getElementById('m-pay-input').value) || 0;
+        const inv = db.logs.find(x => x.id === activeInvId);
+        inv.paid += amt;
+        saveDB();
+        document.getElementById('m-pay-input').value = "";
+        openInvoice(activeInvId);
+        renderLogs();
+    }
+
+    function deleteInvoice() {
+        if(confirm("هل أنت متأكد من حذف هذه الفاتورة نهائياً؟")) {
+            db.logs = db.logs.filter(x => x.id !== activeInvId);
+            saveDB();
+            closeModal();
+            renderLogs();
         }
-        document.getElementById('stock-list').innerHTML = html;
     }
 
-    function addStock() {
-        const id = document.getElementById('st-drug').value;
-        const qty = parseInt(document.getElementById('st-qty').value);
-        if(!id || !qty) return;
-        const itm = app.drugs.find(x=>x.id==id);
-        app.stock[itm.name] += qty;
-        saveData();
-        renderStock();
-        document.getElementById('st-qty').value = '';
-        showCustomAlert("تم إضافة الكمية للمخزن", "success");
-    }
-
-    function doCalc() {
-        const id = document.getElementById('c-drug').value;
+    function quickCalc() {
+        const drug = db.drugs.find(x => x.id == document.getElementById('c-drug').value);
+        if(!drug) return;
         const disc = parseFloat(document.getElementById('c-disc').value) || 0;
-        if(!id) return;
-        const itm = app.drugs.find(x=>x.id==id);
-        const net = itm.price * (1 - (disc/100));
-        document.getElementById('c-unit').innerText = net.toFixed(2) + " ج";
+        const res = drug.price * (1 - disc/100);
+        document.getElementById('c-res').innerText = res.toFixed(2) + " ج";
     }
 
-    // --- أدوات النظام ---
-    function showCustomAlert(msg, type) {
-        document.getElementById('alert-msg').innerText = msg;
-        const icon = document.getElementById('alert-icon');
-        icon.innerHTML = type === 'success' ? '<i class="fas fa-check-circle" style="color:var(--success)"></i>' : '<i class="fas fa-exclamation-triangle" style="color:var(--warning)"></i>';
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('custom-alert').style.display = 'block';
-    }
+    function saveDB() { localStorage.setItem('ncure_pro_data', JSON.stringify(db)); }
 
-    function closeAllModals() {
-        document.querySelectorAll('.custom-alert, .overlay').forEach(el => el.style.display = 'none');
-    }
-
-    function showScreen(idx) {
+    function showScreen(i) {
         document.querySelectorAll('.screen, .tab').forEach(el => el.classList.remove('active'));
-        document.getElementById('s' + idx).classList.add('active');
-        document.getElementById('tab' + idx).classList.add('active');
-        if(idx === 1) renderRecs();
+        document.getElementById('s'+i).classList.add('active');
+        document.getElementById('tab'+i).classList.add('active');
     }
 
-    function loadUserFilters() {
-        const filterList = document.getElementById('user-filter-list');
-        usersList.forEach(u => {
-            if(u.role !== 'master') {
-                const btn = document.createElement('button');
-                btn.className = 'filter-btn';
-                btn.innerText = u.name;
-                btn.onclick = () => filterByUser(u.u);
-                filterList.appendChild(btn);
-            }
-        });
+    function closeModal() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('inv-modal').style.display = 'none';
     }
 
-    function filterByUser(u_id) {
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        renderRecs(u_id);
+    function tick() {
+        document.getElementById('clock').innerText = new Date().toLocaleString('ar-EG');
+        setTimeout(tick, 1000);
     }
-
-    function updatePharmDatalist() {
-        const pharms = [...new Set(app.logs.map(l => l.pharm))];
-        document.getElementById('pharm-list').innerHTML = pharms.map(p => `<option value="${p}">`).join('');
-    }
-
-    function tick() { document.getElementById('clock').innerText = new Date().toLocaleString('ar-EG'); setTimeout(tick, 1000); }
-
 </script>
+
 </body>
 </html>
