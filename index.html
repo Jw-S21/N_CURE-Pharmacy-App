@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,58 +13,54 @@
 
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
-    
     <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22N-CURE%20Professional%22%2C%22short_name%22%3A%22N-CURE%22%2C%22start_url%22%3A%22index.html%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231a6b3c%22%2C%22theme_color%22%3A%22%231a6b3c%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22logo.png%22%2C%22sizes%22%3A%22512x512%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
 
     <style>
-        :root {
-            --primary: #1a6b3c;
-            --primary-dark: #145033;
-            --primary-light: #e8f5ee;
-            --danger: #ef4444;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-        }
-
+        :root { --primary: #1a6b3c; --primary-dark: #145033; --primary-light: #e8f5ee; --gray-100: #f3f4f6; --gray-200: #e5e7eb; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background: var(--gray-100); color: #111; overflow-x: hidden; }
         
-        .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+        .header { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
         .nav-tabs { display: flex; background: white; border-bottom: 2px solid var(--gray-200); }
-        .nav-tab { flex: 1; padding: 15px; border: none; background: none; font-weight: bold; color: #555; cursor: pointer; }
+        .nav-tab { flex: 1; padding: 12px; border: none; background: none; font-weight: bold; color: #555; cursor: pointer; font-size: 0.9rem; }
         .nav-tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: var(--primary-light); }
         
-        .content { padding: 15px; }
+        .content { padding: 10px; }
         .screen { display: none; }
-        .screen.active { display: block; animation: fadeIn 0.3s; }
+        .screen.active { display: block; animation: fadeIn 0.2s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; border: 1px solid var(--gray-200); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .card-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 10px; color: var(--primary); border-right: 4px solid var(--primary); padding-right: 10px; }
+        .card { background: white; border-radius: 10px; padding: 12px; margin-bottom: 10px; border: 1px solid var(--gray-200); }
+        .card-title { font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; color: var(--primary); border-right: 3px solid var(--primary); padding-right: 8px; }
         
-        input, select { width: 100%; padding: 12px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-size: 1rem; margin-top: 5px; }
-        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: block; text-align: center; margin-top: 10px; }
+        label { font-size: 0.75rem; font-weight: bold; display: block; margin-top: 5px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 0.9rem; margin-top: 3px; }
+        .btn { padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; display: block; text-align: center; margin-top: 8px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: #10b981; color: white; }
         .btn-secondary { background: var(--gray-200); color: #333; }
 
-        .record-card { border: 1px solid var(--gray-200); padding: 12px; border-radius: 10px; margin-bottom: 10px; background: white; }
-        .history-list { font-size: 0.8rem; background: #fafafa; padding: 10px; border-radius: 8px; margin-top: 10px; border: 1px dashed #ccc; }
-        .history-item { border-bottom: 1px solid #eee; padding: 5px 0; display: flex; justify-content: space-between; }
+        /* ستايل الجدول المصغر داخل الفاتورة */
+        .item-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 5px; font-size: 0.75rem; padding: 8px 0; border-bottom: 1px solid #eee; align-items: center; }
+        .item-header { font-weight: bold; color: var(--primary); border-bottom: 2px solid var(--gray-200); }
+
+        .record-card { border: 1px solid var(--gray-200); padding: 10px; border-radius: 8px; margin-bottom: 8px; background: white; position: relative; }
+        .total-price { font-size: 1.1rem; font-weight: bold; color: var(--primary); text-align: center; margin: 8px 0; }
         
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 15px; }
-        .modal { background: white; width: 100%; max-width: 500px; border-radius: 15px; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; z-index: 1000; align-items: center; justify-content: center; padding: 15px; }
+        .modal { background: white; width: 100%; max-width: 500px; border-radius: 12px; padding: 15px; max-height: 85vh; overflow-y: auto; }
         
-        .total-price { font-size: 1.2rem; font-weight: bold; color: var(--primary); text-align: center; margin: 10px 0; }
+        .history-item { font-size: 0.75rem; padding: 5px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div>
-        <h1 style="font-size: 1.2rem;">N-CURE Professional</h1>
-        <p id="live-clock" style="font-size: 0.7rem; opacity: 0.8;"></p>
+        <h1 style="font-size: 1.1rem;">N-CURE Professional</h1>
+        <p id="live-clock" style="font-size: 0.65rem; opacity: 0.8;"></p>
     </div>
+    <button onclick="openSettings()" style="background:none; border:none; color:white; font-size:1.4rem;">⚙️</button>
 </div>
 
 <div class="nav-tabs">
@@ -77,25 +72,33 @@
 <div class="content">
     <div class="screen active" id="screen-0">
         <div class="card">
-            <div class="card-title">بيانات العميل</div>
+            <div class="card-title">بيانات الفاتورة</div>
+            <label>اسم الصيدلية</label>
             <input type="text" id="pharm-name" value="صيدلية / ">
+            <label>اسم المستلم</label>
+            <input type="text" id="receiver-name" value="دكتور/ ">
+            <label>التاريخ</label>
             <input type="date" id="inv-date">
         </div>
         <div class="card">
             <div class="card-title">إضافة أصناف</div>
             <select id="drug-sel" onchange="previewPrice()"></select>
-            <div style="display:flex; gap:10px">
-                <div style="flex:1"><label style="font-size:0.7rem">خصم %</label><input type="number" id="disc" value="25" inputmode="decimal" oninput="previewPrice()"></div>
-                <div style="flex:1"><label style="font-size:0.7rem">كمية</label><input type="number" id="qty" value="1" inputmode="numeric" oninput="previewPrice()"></div>
+            <div style="display:flex; gap:8px">
+                <div style="flex:1"><label>خصم %</label><input type="number" id="disc" value="25" inputmode="decimal" oninput="previewPrice()"></div>
+                <div style="flex:1"><label>كمية</label><input type="number" id="qty" value="1" inputmode="numeric" oninput="previewPrice()"></div>
             </div>
-            <div class="total-price" id="pre-total" style="display:none">0.00 ج</div>
-            <button class="btn btn-primary" onclick="addToList()">➕ إضافة</button>
+            <div class="total-price" id="pre-total" style="display:none; font-size:0.9rem">0.00 ج</div>
+            <button class="btn btn-primary" onclick="addToList()">➕ إضافة للفاتورة</button>
         </div>
         <div id="cart-area" class="card" style="display:none">
-            <div class="card-title">الأصناف المضافة</div>
+            <div class="card-title">تفاصيل الأصناف</div>
+            <div class="item-row item-header">
+                <span>الصنف</span><span>سعر</span><span>كمية</span><span>إجمالي</span>
+            </div>
             <div id="cart-items"></div>
-            <div class="total-price">الإجمالي النهائي: <span id="final-total">0</span> ج</div>
-            <input type="number" id="paid-now" placeholder="المبلغ المدفوع الآن" inputmode="decimal">
+            <div class="total-price">إجمالي الفاتورة: <span id="final-total">0</span> ج</div>
+            <label>المبلغ المدفوع</label>
+            <input type="number" id="paid-now" placeholder="0.00" inputmode="decimal">
             <button class="btn btn-success" onclick="saveInvoice()">💾 حفظ الفاتورة</button>
         </div>
     </div>
@@ -106,15 +109,25 @@
 
     <div class="screen" id="screen-2">
         <div class="card">
-            <div class="card-title">حاسبة الخصم السريعة</div>
+            <div class="card-title">حاسبة الخصم</div>
             <select id="calc-sel" onchange="quickCalc()"></select>
-            <input type="number" id="calc-disc" value="25" inputmode="decimal" oninput="quickCalc()" placeholder="الخصم %">
+            <label>نسبة الخصم %</label>
+            <input type="number" id="calc-disc" value="25" inputmode="decimal" oninput="quickCalc()">
             <div class="total-price" id="calc-res">0.00 ج</div>
         </div>
     </div>
 </div>
 
-<div class="modal-overlay" id="modal-overlay">
+<div class="modal-overlay" id="settings-overlay">
+    <div class="modal">
+        <div class="card-title">إدارة النظام</div>
+        <button class="btn btn-secondary" onclick="exportData()">📥 تصدير نسخة احتياطية</button>
+        <button class="btn btn-danger" style="background:#fee2e2; color:red; margin-top:10px" onclick="clearData()">🗑️ مسح كل البيانات</button>
+        <button class="btn btn-primary" style="margin-top:20px" onclick="closeSettings()">إغلاق</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="details-overlay">
     <div class="modal" id="modal-content"></div>
 </div>
 
@@ -123,19 +136,20 @@
     let cart = [];
 
     function init() {
-        const saved = localStorage.getItem('ncure_v3');
+        const saved = localStorage.getItem('ncure_v4');
         if(saved) db = JSON.parse(saved);
         document.getElementById('inv-date').valueAsDate = new Date();
         loadLists(); renderRecords(); startTime();
     }
 
-    function saveData() { localStorage.setItem('ncure_v3', JSON.stringify(db)); }
+    function saveData() { localStorage.setItem('ncure_v4', JSON.stringify(db)); }
 
     function switchTab(i) {
         document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
         document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
         document.getElementById(`screen-${i}`).classList.add('active');
         document.querySelectorAll('.nav-tab')[i].classList.add('active');
+        if(i===1) renderRecords();
     }
 
     function loadLists() {
@@ -148,8 +162,9 @@
         const id = document.getElementById('drug-sel').value;
         if(!id) return;
         const d = db.drugs.find(x=>x.id==id);
-        const total = (d.price * (1 - (document.getElementById('disc').value/100))) * document.getElementById('qty').value;
-        document.getElementById('pre-total').innerText = total.toFixed(2) + ' ج';
+        const unitPrice = d.price * (1 - (document.getElementById('disc').value/100));
+        const total = unitPrice * document.getElementById('qty').value;
+        document.getElementById('pre-total').innerText = `صافي الوحدة: ${unitPrice.toFixed(2)} | الإجمالي: ${total.toFixed(2)} ج`;
         document.getElementById('pre-total').style.display = 'block';
     }
 
@@ -157,27 +172,34 @@
         const id = document.getElementById('drug-sel').value;
         if(!id) return;
         const d = db.drugs.find(x=>x.id==id);
-        const total = (d.price * (1 - (document.getElementById('disc').value/100))) * document.getElementById('qty').value;
-        cart.push({ name: d.name, total });
+        const disc = document.getElementById('disc').value;
+        const qty = document.getElementById('qty').value;
+        const unitPrice = d.price * (1 - (disc/100));
+        cart.push({ name: d.name, unitPrice, qty, total: unitPrice * qty });
         renderCart();
     }
 
     function renderCart() {
         document.getElementById('cart-area').style.display = 'block';
-        document.getElementById('cart-items').innerHTML = cart.map(c=>`<div>${c.name} - ${c.total.toFixed(2)}ج</div>`).join('');
+        document.getElementById('cart-items').innerHTML = cart.map(c=>`
+            <div class="item-row">
+                <span>${c.name}</span><span>${c.unitPrice.toFixed(1)}</span><span>${c.qty}</span><span><b>${c.total.toFixed(1)}</b></span>
+            </div>
+        `).join('');
         document.getElementById('final-total').innerText = cart.reduce((a,b)=>a+b.total, 0).toFixed(2);
     }
 
     function saveInvoice() {
         const total = cart.reduce((a,b)=>a+b.total, 0);
         const paid = parseFloat(document.getElementById('paid-now').value) || 0;
-        const timeStr = new Date().toLocaleString('ar-EG');
         db.invoices.unshift({
             id: db.nextId++,
             pharmacy: document.getElementById('pharm-name').value,
+            receiver: document.getElementById('receiver-name').value,
             date: document.getElementById('inv-date').value,
+            items: [...cart],
             total, paid,
-            history: [{ time: timeStr, amount: paid }]
+            history: [{ time: new Date().toLocaleString('ar-EG'), amount: paid }]
         });
         saveData(); cart = []; document.getElementById('cart-area').style.display='none';
         renderRecords(); switchTab(1);
@@ -186,9 +208,9 @@
     function renderRecords() {
         document.getElementById('records-list').innerHTML = db.invoices.map(inv=>`
             <div class="record-card" onclick="showDetails(${inv.id})">
-                <b>${inv.pharmacy}</b><br>
-                <small>#${inv.id} - ${inv.date}</small>
-                <div style="color:${inv.paid >= inv.total ? 'green':'red'}">المتبقي: ${(inv.total - inv.paid).toFixed(2)} ج</div>
+                <div style="font-size:0.9rem"><b>${inv.pharmacy}</b></div>
+                <div style="font-size:0.75rem; color:#666">${inv.receiver} | #${inv.id}</div>
+                <div style="color:${inv.paid >= inv.total ? 'green':'red'}; font-weight:bold; font-size:0.85rem">المتبقي: ${(inv.total - inv.paid).toFixed(2)} ج</div>
             </div>
         `).join('');
     }
@@ -196,17 +218,20 @@
     function showDetails(id) {
         const inv = db.invoices.find(i=>i.id==id);
         document.getElementById('modal-content').innerHTML = `
-            <h3>${inv.pharmacy}</h3>
-            <p>إجمالي الفاتورة: ${inv.total.toFixed(2)} ج</p>
-            <div class="history-list">
-                <b>سجل التحصيلات:</b>
-                ${inv.history.map(h=>`<div class="history-item"><span>${h.time}</span> <b>${h.amount} ج</b></div>`).join('')}
+            <h3 style="color:var(--primary); font-size:1rem">${inv.pharmacy}</h3>
+            <p style="font-size:0.8rem; margin-bottom:10px">${inv.receiver} - ${inv.date}</p>
+            <div class="item-row item-header"><span>الصنف</span><span>سعر</span><span>كم</span><span>إجمالي</span></div>
+            ${inv.items.map(it=>`<div class="item-row"><span>${it.name}</span><span>${it.unitPrice.toFixed(1)}</span><span>${it.qty}</span><span>${it.total.toFixed(1)}</span></div>`).join('')}
+            <div class="total-price">الإجمالي: ${inv.total.toFixed(2)} ج</div>
+            <div style="background:#f9f9f9; padding:8px; border-radius:8px">
+                <p style="font-size:0.8rem"><b>سجل التحصيل:</b></p>
+                ${inv.history.map(h=>`<div class="history-item"><span>${h.time}</span><b>${h.amount} ج</b></div>`).join('')}
             </div>
-            <input type="number" id="add-pay" placeholder="مبلغ تحصيل جديد" inputmode="decimal" style="margin-top:10px">
-            <button class="btn btn-success" onclick="addPayment(${id})">إضافة المبلغ للسجل</button>
+            <input type="number" id="add-pay" placeholder="تحصيل مبلغ جديد" inputmode="decimal" style="margin-top:10px">
+            <button class="btn btn-success" onclick="addPayment(${id})">تحديث التحصيل</button>
             <button class="btn btn-secondary" onclick="closeModal()">إغلاق</button>
         `;
-        document.getElementById('modal-overlay').style.display='flex';
+        document.getElementById('details-overlay').style.display='flex';
     }
 
     function addPayment(id) {
@@ -226,7 +251,11 @@
         document.getElementById('calc-res').innerText = res.toFixed(2) + ' ج';
     }
 
-    function closeModal() { document.getElementById('modal-overlay').style.display='none'; }
+    function openSettings() { document.getElementById('settings-overlay').style.display='flex'; }
+    function closeSettings() { document.getElementById('settings-overlay').style.display='none'; }
+    function closeModal() { document.getElementById('details-overlay').style.display='none'; }
+    function clearData() { if(confirm('حذف كل البيانات؟')){ localStorage.clear(); location.reload(); } }
+    function exportData() { alert(JSON.stringify(db)); }
     function startTime() { document.getElementById('live-clock').innerHTML = new Date().toLocaleTimeString('ar-EG'); setTimeout(startTime,1000); }
     init();
 </script>
